@@ -1,3 +1,4 @@
+'use strict';
 var dns = require('native-dns');
 
 module.exports = function (cb) {
