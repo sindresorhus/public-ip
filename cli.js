@@ -8,7 +8,7 @@ meow({
 		'Example',
 		'  $ public-ip',
 		'  46.5.21.123'
-	].join('\n')
+	]
 });
 
 publicIp(function (err, ip) {
