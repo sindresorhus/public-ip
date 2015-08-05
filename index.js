@@ -22,7 +22,7 @@ module.exports = function (cb) {
 		var ip = res.answer[0] && res.answer[0].address;
 
 		if (!ip) {
-			cb(new Error('Couldn\'t find your IP'));
+			return cb(new Error('Couldn\'t find your IP'));
 		}
 
 		cb(null, ip);
