@@ -23,6 +23,7 @@ module.exports = function (cb) {
 
 		if (!ip) {
 			cb(new Error('Couldn\'t find your IP'));
+			return;
 		}
 
 		cb(null, ip);
