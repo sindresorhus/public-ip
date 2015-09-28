@@ -15,7 +15,7 @@
     "node": ">=0.10.0"
   },
   "scripts": {
-    "test": "xo && node test.js"
+    "test": "xo && ava"
   },
   "files": [
     "index.js",
@@ -41,7 +41,7 @@
     "native-dns": "^0.7.0"
   },
   "devDependencies": {
-    "ava": "0.0.4",
+    "ava": "*",
     "is-ip": "^1.0.0",
     "xo": "*"
   }

@@ -1,34 +1,27 @@
-'use strict';
-var test = require('ava');
-var isIp = require('is-ip');
-var publicIp = require('./');
+import test from 'ava';
+import isIp from 'is-ip';
+import fn from './';
 
-test('Default IPv4', function (t) {
-	t.plan(2);
-
-	publicIp(function (err, ip) {
-		t.assert(!err, err);
-		t.assert(isIp(ip));
+test('main', t => {
+	fn(function (err, ip) {
+		t.ifError(err);
+		t.true(isIp.v4(ip));
 		t.end();
 	});
 });
 
-test('Explicit IPv4', function (t) {
-	t.plan(2);
-
-	publicIp.v4(function (err, ip) {
-		t.assert(!err, err);
-		t.assert(isIp(ip));
+test('IPv4', t => {
+	fn.v4((err, ip) => {
+		t.ifError(err);
+		t.true(isIp.v4(ip));
 		t.end();
 	});
 });
 
-test('IPv6 param', function (t) {
-	t.plan(2);
-
-	publicIp.v6(function (err, ip) {
-		t.assert(!err, err);
-		t.assert(isIp(ip));
+test('IPv6', t => {
+	fn.v6((err, ip) => {
+		t.ifError(err);
+		t.true(isIp.v6(ip));
 		t.end();
 	});
 });
