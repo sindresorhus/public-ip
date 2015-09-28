@@ -1,10 +1,13 @@
+/* eslint-disable new-cap */
 'use strict';
 var dns = require('native-dns');
+var OPEN_DNS_IPV4 = '208.67.222.222';
+var OPEN_DNS_IPV6 = '2620:0:ccc::2';
 
 var type = {
 	v4: {
 		server: {
-			address: '208.67.222.222', // OpenDNS
+			address: OPEN_DNS_IPV4,
 			port: 53,
 			type: 'udp'
 		},
@@ -15,7 +18,7 @@ var type = {
 	},
 	v6: {
 		server: {
-			address: '2620:0:ccc::2', // OpenDNS
+			address: OPEN_DNS_IPV6,
 			port: 53,
 			type: 'udp'
 		},
@@ -34,6 +37,11 @@ function query(version, cb) {
 	});
 
 	req.on('message', function (err, res) {
+		if (err) {
+			cb(err);
+			return;
+		}
+
 		var ip = res.answer[0] && res.answer[0].address;
 
 		if (!ip) {
