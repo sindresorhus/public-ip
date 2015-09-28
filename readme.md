@@ -14,7 +14,13 @@ $ npm install --global public-ip
 ```
 $ public-ip --help
 
-  Example
+  Usage
+    $ public-ip
+
+  Options
+    --ipv6  Return the IPv6 address instead of IPv4
+
+  Examples
     $ public-ip
     46.5.21.123
 ```
