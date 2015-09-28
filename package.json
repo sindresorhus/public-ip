@@ -27,6 +27,7 @@
     "bin",
     "ip",
     "ipv4",
+    "ipv6",
     "address",
     "external",
     "public",
