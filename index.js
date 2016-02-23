@@ -22,9 +22,11 @@ var type = {
 function query(version, cb) {
 	var data = type[version];
 
-	dns({
+	var socket = dns({
 		socket: dgram.createSocket(version === 'v6' ? 'udp6' : 'udp4')
-	}).query({
+	});
+
+	socket.query({
 		questions: [data.question]
 	}, 53, data.server, function (err, res) {
 		if (err) {
@@ -33,6 +35,7 @@ function query(version, cb) {
 		}
 
 		var ip = res.answers[0] && res.answers[0].data;
+		socket.destroy();
 
 		if (!ip) {
 			cb(new Error('Couldn\'t find your IP'));
