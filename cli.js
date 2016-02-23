@@ -9,7 +9,7 @@ var cli = meow({
 		'  $ public-ip',
 		'',
 		'Options',
-		'  -4, --ipv4  Return the IPv4 address',
+		'  -4, --ipv4  Return the IPv4 address (default)',
 		'  -6, --ipv6  Return the IPv6 address',
 		'',
 		'Examples',
@@ -18,7 +18,14 @@ var cli = meow({
 	]
 });
 
-var fn = (cli.flags['6'] || cli.flags.ipv6) ? 'v6' : 'v4';
+var fn;
+if (Object.keys(cli.flags).length === 0 || cli.flags['4'] || cli.flags.ipv4) {
+	fn = 'v4';
+} else if (cli.flags['6'] || cli.flags.ipv6) {
+	fn = 'v6';
+} else {
+	cli.showHelp();
+}
 
 publicIp[fn](function (err, ip) {
 	if (err) {
