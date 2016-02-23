@@ -18,7 +18,8 @@ $ public-ip --help
     $ public-ip
 
   Options
-    --ipv6  Return the IPv6 address instead of IPv4
+    -4, --ipv4  Return the IPv4 address (default)
+    -6, --ipv6  Return the IPv6 address
 
   Examples
     $ public-ip

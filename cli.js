@@ -9,15 +9,21 @@ var cli = meow({
 		'  $ public-ip',
 		'',
 		'Options',
-		'  --ipv6  Return the IPv6 address instead of IPv4',
+		'  -4, --ipv4  Return the IPv4 address (default)',
+		'  -6, --ipv6  Return the IPv6 address',
 		'',
 		'Examples',
 		'  $ public-ip',
 		'  46.5.21.123'
 	]
+}, {
+	alias: {
+		4: 'ipv4',
+		6: 'ipv6'
+	}
 });
 
-var fn = cli.flags.ipv6 ? 'v6' : 'v4';
+var fn = cli.flags.ipv4 ? 'v4' : cli.flags.ipv6 ? 'v6' : 'v4';
 
 publicIp[fn](function (err, ip) {
 	if (err) {
