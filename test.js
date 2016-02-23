@@ -18,10 +18,12 @@ test.cb('IPv4', t => {
 	});
 });
 
-test.cb('IPv6', t => {
-	fn.v6((err, ip) => {
-		t.ifError(err);
-		t.true(isIp.v6(ip));
-		t.end();
+if (!process.env.CI) {
+	test.cb('IPv6', t => {
+		fn.v6((err, ip) => {
+			t.ifError(err);
+			t.true(isIp.v6(ip));
+			t.end();
+		});
 	});
-});
+}

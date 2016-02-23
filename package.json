@@ -37,8 +37,8 @@
     "dns"
   ],
   "dependencies": {
-    "meow": "^3.3.0",
-    "native-dns": "^0.7.0"
+    "dns-socket": "^1.0.0",
+    "meow": "^3.3.0"
   },
   "devDependencies": {
     "ava": "*",
