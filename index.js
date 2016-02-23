@@ -1,48 +1,38 @@
-/* eslint-disable new-cap */
 'use strict';
-var dns = require('native-dns');
-var OPEN_DNS_IPV4 = '208.67.222.222';
-var OPEN_DNS_IPV6 = '2620:0:ccc::2';
+var dgram = require('dgram');
+var dns = require('dns-socket');
 
 var type = {
 	v4: {
-		server: {
-			address: OPEN_DNS_IPV4,
-			port: 53,
-			type: 'udp'
-		},
-		question: dns.Question({
+		server: '208.67.222.222',
+		question: {
 			name: 'myip.opendns.com',
 			type: 'A'
-		})
+		}
 	},
 	v6: {
-		server: {
-			address: OPEN_DNS_IPV6,
-			port: 53,
-			type: 'udp'
-		},
-		question: dns.Question({
+		server: '2620:0:ccc::2',
+		question: {
 			name: 'myip.opendns.com',
 			type: 'AAAA'
-		})
+		}
 	}
 };
 
 function query(version, cb) {
-	var req = dns.Request(type[version]);
+	var data = type[version];
 
-	req.on('timeout', function () {
-		cb(new Error('Request timed out'));
-	});
-
-	req.on('message', function (err, res) {
+	dns({
+		socket: dgram.createSocket(version === 'v6' ? 'udp6' : 'udp4')
+	}).query({
+		questions: [data.question]
+	}, 53, data.server, function (err, res) {
 		if (err) {
 			cb(err);
 			return;
 		}
 
-		var ip = res.answer[0] && res.answer[0].address;
+		var ip = res.answers[0] && res.answers[0].data;
 
 		if (!ip) {
 			cb(new Error('Couldn\'t find your IP'));
@@ -51,8 +41,6 @@ function query(version, cb) {
 
 		cb(null, ip);
 	});
-
-	req.send();
 }
 
 function v4(cb) {
