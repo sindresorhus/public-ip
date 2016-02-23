@@ -16,16 +16,14 @@ var cli = meow({
 		'  $ public-ip',
 		'  46.5.21.123'
 	]
+}, {
+	alias: {
+		4: 'ipv4',
+		6: 'ipv6'
+	}
 });
 
-var fn;
-if (Object.keys(cli.flags).length === 0 || cli.flags['4'] || cli.flags.ipv4) {
-	fn = 'v4';
-} else if (cli.flags['6'] || cli.flags.ipv6) {
-	fn = 'v6';
-} else {
-	cli.showHelp();
-}
+var fn = cli.flags.ipv4 ? 'v4' : cli.flags.ipv6 ? 'v6' : 'v4';
 
 publicIp[fn](function (err, ip) {
 	if (err) {
