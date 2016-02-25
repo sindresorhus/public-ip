@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+/* eslint-disable no-nested-ternary */
 'use strict';
 var meow = require('meow');
 var publicIp = require('./');
@@ -23,7 +24,7 @@ var cli = meow({
 	}
 });
 
-var fn = cli.flags.ipv4 ? 'v4' : cli.flags.ipv6 ? 'v6' : 'v4';
+var fn = cli.flags.ipv4 ? 'v4' : (cli.flags.ipv6 ? 'v6' : 'v4');
 
 publicIp[fn](function (err, ip) {
 	if (err) {
