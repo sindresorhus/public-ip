@@ -1,29 +1,17 @@
 import test from 'ava';
 import isIp from 'is-ip';
-import fn from './';
+import m from './';
 
-test.cb('main', t => {
-	fn((err, ip) => {
-		t.ifError(err);
-		t.true(isIp.v4(ip));
-		t.end();
-	});
+test('main', async t => {
+	t.true(isIp.v4(await m()));
 });
 
-test.cb('IPv4', t => {
-	fn.v4((err, ip) => {
-		t.ifError(err);
-		t.true(isIp.v4(ip));
-		t.end();
-	});
+test('IPv4', async t => {
+	t.true(isIp.v4(await m.v4()));
 });
 
 if (!process.env.CI) {
-	test.cb('IPv6', t => {
-		fn.v6((err, ip) => {
-			t.ifError(err);
-			t.true(isIp.v6(ip));
-			t.end();
-		});
+	test('IPv6', async t => {
+		t.true(isIp.v6(await m.v6()));
 	});
 }

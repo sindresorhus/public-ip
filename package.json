@@ -12,7 +12,7 @@
   "bin": "cli.js",
   "preferGlobal": true,
   "engines": {
-    "node": ">=0.10.0"
+    "node": ">=4"
   },
   "scripts": {
     "test": "xo && ava"
@@ -38,11 +38,15 @@
   ],
   "dependencies": {
     "dns-socket": "^1.0.0",
-    "meow": "^3.3.0"
+    "meow": "^3.3.0",
+    "pify": "^2.3.0"
   },
   "devDependencies": {
     "ava": "*",
     "is-ip": "^1.0.0",
     "xo": "*"
+  },
+  "xo": {
+    "esnext": true
   }
 }
