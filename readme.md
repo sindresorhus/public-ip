@@ -5,6 +5,45 @@
 Queries the DNS records of OpenDNS which has an entry with your IP address.
 
 
+## Install
+
+```
+$ npm install --save public-ip
+```
+
+
+## Usage
+
+```js
+const publicIp = require('public-ip');
+
+publicIp.v4().then(ip => {
+	console.log(ip);
+	//=> '46.5.21.123'
+});
+
+publicIp.v6().then(ip => {
+	console.log(ip);
+	//=> 'fe80::200:f8ff:fe21:67cf'
+});
+```
+
+
+## API
+
+### publicIp()
+
+Returns a Promise for your public IPv4 address.
+
+### publicIp.v4()
+
+Returns a Promise for your public IPv4 address.
+
+### publicIp.v6()
+
+Returns a Promise for your public IPv6 addres.
+
+
 ## CLI
 
 ```
@@ -36,32 +75,11 @@ sys     0.02s
 ```
 
 
-## API
-
-```
-$ npm install --save public-ip
-```
-
-```js
-var publicIp = require('public-ip');
-
-publicIp.v4(function (err, ip) {
-	console.log(ip);
-	//=> '46.5.21.123'
-});
-
-publicIp.v6(function (err, ip) {
-	console.log(ip);
-	//=> 'fe80::200:f8ff:fe21:67cf'
-});
-```
-
-
 ## Related
 
-See [internal-ip](https://github.com/sindresorhus/internal-ip) to get your internal IP address.
+- [internal-ip](https://github.com/sindresorhus/internal-ip) - Get your internal IPv4 or IPv6 address
 
 
 ## License
 
-MIT © [Sindre Sorhus](http://sindresorhus.com)
+MIT © [Sindre Sorhus](https://sindresorhus.com)
