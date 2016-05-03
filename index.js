@@ -41,9 +41,5 @@ const query = version => {
 	});
 };
 
-const v4 = () => query('v4');
-const v6 = () => query('v6');
-
-module.exports = v4;
-module.exports.v4 = v4;
-module.exports.v6 = v6;
+module.exports.v4 = () => query('v4');
+module.exports.v6 = () => query('v6');

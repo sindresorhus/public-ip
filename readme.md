@@ -31,10 +31,6 @@ publicIp.v6().then(ip => {
 
 ## API
 
-### publicIp()
-
-Returns a Promise for your public IPv4 address.
-
 ### publicIp.v4()
 
 Returns a Promise for your public IPv4 address.
