@@ -37,43 +37,13 @@ Returns a Promise for your public IPv4 address.
 
 ### publicIp.v6()
 
-Returns a Promise for your public IPv6 addres.
-
-
-## CLI
-
-```
-$ npm install --global public-ip
-```
-
-```
-$ public-ip --help
-
-  Usage
-    $ public-ip
-
-  Options
-    -4, --ipv4  Return the IPv4 address (default)
-    -6, --ipv6  Return the IPv6 address
-
-  Examples
-    $ public-ip
-    46.5.21.123
-```
-
-```
-$ time public-ip
-46.5.21.123
-
-real    0.08s
-user    0.05s
-sys     0.02s
-```
+Returns a Promise for your public IPv6 address.
 
 
 ## Related
 
-- [internal-ip](https://github.com/sindresorhus/internal-ip) - Get your internal IPv4 or IPv6 address
+- [public-ip-cli](https://github.com/sindresorhus/public-ip-cli) - CLI for this module
+- [internal-ip](https://github.com/sindresorhus/internal-ip) - Get your internal IP address
 
 
 ## License

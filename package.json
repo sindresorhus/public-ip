@@ -9,8 +9,6 @@
     "email": "sindresorhus@gmail.com",
     "url": "sindresorhus.com"
   },
-  "bin": "cli.js",
-  "preferGlobal": true,
   "engines": {
     "node": ">=4"
   },
@@ -18,13 +16,10 @@
     "test": "xo && ava"
   },
   "files": [
-    "index.js",
-    "cli.js"
+    "index.js"
   ],
   "keywords": [
-    "cli-app",
-    "cli",
-    "bin",
+    "get",
     "ip",
     "ipv4",
     "ipv6",
@@ -38,7 +33,6 @@
   ],
   "dependencies": {
     "dns-socket": "^1.0.0",
-    "meow": "^3.3.0",
     "pify": "^2.3.0"
   },
   "devDependencies": {
