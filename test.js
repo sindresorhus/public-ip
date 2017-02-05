@@ -1,6 +1,6 @@
 import test from 'ava';
 import isIp from 'is-ip';
-import m from './';
+import m from '.';
 
 test('IPv4 DNS', async t => {
 	t.true(isIp.v4(await m.v4()));

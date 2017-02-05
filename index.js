@@ -46,6 +46,7 @@ const queryDns = version => {
 
 const queryHttps = version => {
 	const opts = {family: (version === 'v6') ? 6 : 4};
+
 	return got(type[version].httpsUrl, opts).then(res => {
 		const ip = (res.body || '').trim();
 
@@ -59,16 +60,20 @@ const queryHttps = version => {
 
 module.exports.v4 = opts => {
 	opts = opts || {};
+
 	if (opts.https) {
 		return queryHttps('v4');
 	}
+
 	return queryDns('v4');
 };
 
 module.exports.v6 = opts => {
 	opts = opts || {};
+
 	if (opts.https) {
 		return queryHttps('v6');
 	}
+
 	return queryDns('v6');
 };

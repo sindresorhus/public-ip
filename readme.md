@@ -33,23 +33,23 @@ publicIp.v6().then(ip => {
 
 ### publicIp.v4([options])
 
-Returns a Promise for your public IPv4 address.
+Returns a `Promise` for your public IPv4 address.
 
 ### publicIp.v6([options])
 
-Returns a Promise for your public IPv6 address.
+Returns a `Promise` for your public IPv6 address.
 
 #### options
 
-Type: `Object`<br>
+Type: `Object`
 
-A options object.
+##### https
 
-##### options.https
+Type: `boolean`<br>
+Default: `false`
 
-Type: `Boolean`<br>
+Use a HTTPS check using the [icanhazip.com](https://github.com/major/icanhaz) service instead of the DNS query. This check is much more secure and tamper-proof, but also a lot slower.
 
-When `true`, uses a HTTPS check using the [icanhazip.com](https://github.com/major/icanhaz) service. This check is much more secure and tamper-proof, but also a lot slower.
 
 ## Related
 
