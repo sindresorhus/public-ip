@@ -32,12 +32,13 @@
     "dns"
   ],
   "dependencies": {
-    "dns-socket": "^1.0.0",
+    "dns-socket": "^1.6.0",
+    "got": "^6.7.1",
     "pify": "^2.3.0"
   },
   "devDependencies": {
     "ava": "*",
-    "is-ip": "^1.0.0",
+    "is-ip": "^2.0.0",
     "xo": "*"
   },
   "xo": {
