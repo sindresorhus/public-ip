@@ -47,7 +47,7 @@ const queryDns = version => {
 const queryHttps = version => {
 	const opts = {family: (version === 'v6') ? 6 : 4};
 	return got(type[version].httpsUrl, opts).then(res => {
-		const ip = res.body.trim();
+		const ip = (res.body || '').trim();
 
 		if (!ip) {
 			throw new Error('Couldn\'t find your IP');
