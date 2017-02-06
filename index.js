@@ -4,6 +4,11 @@ const dns = require('dns-socket');
 const got = require('got');
 const pify = require('pify');
 
+const defaults = {
+	timeout: 5000,
+	https: false
+};
+
 const type = {
 	v4: {
 		dnsServer: '208.67.222.222',
@@ -23,11 +28,13 @@ const type = {
 	}
 };
 
-const queryDns = version => {
+const queryDns = (version, opts) => {
 	const data = type[version];
 
 	const socket = dns({
-		socket: dgram.createSocket(version === 'v6' ? 'udp6' : 'udp4')
+		retries: 0,
+		socket: dgram.createSocket(version === 'v6' ? 'udp6' : 'udp4'),
+		timeout: opts.timeout
 	});
 
 	return pify(socket.query.bind(socket))({
@@ -44,10 +51,14 @@ const queryDns = version => {
 	});
 };
 
-const queryHttps = version => {
-	const opts = {family: (version === 'v6') ? 6 : 4};
+const queryHttps = (version, opts) => {
+	const gotOpts = {
+		family: (version === 'v6') ? 6 : 4,
+		retries: 0,
+		timeout: opts.timeout
+	};
 
-	return got(type[version].httpsUrl, opts).then(res => {
+	return got(type[version].httpsUrl, gotOpts).then(res => {
 		const ip = (res.body || '').trim();
 
 		if (!ip) {
@@ -59,21 +70,21 @@ const queryHttps = version => {
 };
 
 module.exports.v4 = opts => {
-	opts = opts || {};
+	opts = Object.assign({}, defaults, opts);
 
 	if (opts.https) {
-		return queryHttps('v4');
+		return queryHttps('v4', opts);
 	}
 
-	return queryDns('v4');
+	return queryDns('v4', opts);
 };
 
 module.exports.v6 = opts => {
-	opts = opts || {};
+	opts = Object.assign({}, defaults, opts);
 
 	if (opts.https) {
-		return queryHttps('v6');
+		return queryHttps('v6', opts);
 	}
 
-	return queryDns('v6');
+	return queryDns('v6', opts);
 };

@@ -50,6 +50,12 @@ Default: `false`
 
 Use a HTTPS check using the [icanhazip.com](https://github.com/major/icanhaz) service instead of the DNS query. This check is much more secure and tamper-proof, but also a lot slower.
 
+##### timeout
+
+Type: `number`<br>
+Default: `5000`
+
+The time in milliseconds until a request is considered timed out.
 
 ## Related
 
