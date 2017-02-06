@@ -57,6 +57,12 @@ Default: `5000`
 
 The time in milliseconds until a request is considered timed out.
 
+
+## Maintainers
+
+- [silverwind](https://github.com/silverwind)
+
+
 ## Related
 
 - [public-ip-cli](https://github.com/sindresorhus/public-ip-cli) - CLI for this module
