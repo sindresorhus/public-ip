@@ -1,7 +1,11 @@
 'use strict';
 /* global XMLHttpRequest */
 
-var urls = {
+const defaults = {
+	timeout: 5000
+};
+
+const urls = {
 	v4: 'https://ipv4.icanhazip.com/',
 	v6: 'https://ipv6.icanhazip.com/'
 };
@@ -18,14 +22,12 @@ function queryHttps(version, opts) {
 	});
 }
 
-module.exports.v4 = function (opts) {
-	opts = opts || {};
-	opts.timeout = typeof opts.timeout === 'number' ? opts.timeout : 5000;
+module.exports.v4 = opts => {
+	opts = Object.assign({}, defaults, opts);
 	return queryHttps('v4', opts);
 };
 
-module.exports.v6 = function (opts) {
-	opts = opts || {};
-	opts.timeout = typeof opts.timeout === 'number' ? opts.timeout : 5000;
+module.exports.v6 = opts => {
+	opts = Object.assign({}, defaults, opts);
 	return queryHttps('v6', opts);
 };
