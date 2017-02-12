@@ -15,6 +15,9 @@
   "scripts": {
     "test": "xo && ava test.js"
   },
+  "xo": {
+    "envs": ["node", "browser"]
+  },
   "files": [
     "index.js"
   ],
@@ -34,6 +37,7 @@
   "dependencies": {
     "dns-socket": "^1.6.1",
     "got": "^6.7.1",
+    "is-ip": "^2.0.0",
     "pify": "^2.3.0"
   },
   "devDependencies": {

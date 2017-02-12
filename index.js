@@ -2,6 +2,7 @@
 const dgram = require('dgram');
 const dns = require('dns-socket');
 const got = require('got');
+const isIp = require('is-ip');
 const pify = require('pify');
 
 const defaults = {
@@ -40,10 +41,10 @@ const queryDns = (version, opts) => {
 	return pify(socket.query.bind(socket))({
 		questions: [data.dnsQuestion]
 	}, 53, data.dnsServer).then(res => {
-		const ip = res.answers[0] && res.answers[0].data;
 		socket.destroy();
+		const ip = ((res.answers[0] && res.answers[0].data) || '').trim();
 
-		if (!ip) {
+		if (!ip || !isIp[version](ip)) {
 			throw new Error('Couldn\'t find your IP');
 		}
 

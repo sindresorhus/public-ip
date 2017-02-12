@@ -1,5 +1,6 @@
 'use strict';
-/* global XMLHttpRequest */
+
+const isIp = require('is-ip');
 
 const defaults = {
 	timeout: 5000
@@ -12,11 +13,22 @@ const urls = {
 
 function queryHttps(version, opts) {
 	return new Promise((resolve, reject) => {
-		var xhr = new XMLHttpRequest();
+		const doReject = () => reject(new Error('Couldn\'t find your IP'));
+		const xhr = new XMLHttpRequest();
+
 		xhr.timeout = opts.timeout;
-		xhr.onerror = () => reject(new Error('Couldn\'t find your IP'));
-		xhr.ontimeout = () => reject(new Error('Couldn\'t find your IP'));
-		xhr.onload = () => resolve(xhr.responseText.trim());
+		xhr.onerror = () => doReject;
+		xhr.ontimeout = () => doReject;
+		xhr.onload = () => {
+			const ip = xhr.responseText.trim();
+
+			if (!ip || !isIp[version](ip)) {
+				doReject();
+			}
+
+			resolve(ip);
+		};
+
 		xhr.open('GET', urls[version]);
 		xhr.send();
 	});
