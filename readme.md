@@ -2,8 +2,9 @@
 
 > Get your public IP address - very fast!
 
-Queries the DNS records of OpenDNS which has an entry with your IP address.
+In Node.js, it queries the DNS records of OpenDNS which has an entry with your IP address.
 
+In browsers, it uses the excellent [icanhaz](https://github.com/major/icanhaz) service through HTTPS.
 
 ## Install
 
@@ -33,11 +34,11 @@ publicIp.v6().then(ip => {
 
 ### publicIp.v4([options])
 
-Returns a `Promise` for your public IPv4 address.
+Returns a `Promise` for your public IPv4 address. Will reject on error or timeout.
 
 ### publicIp.v6([options])
 
-Returns a `Promise` for your public IPv6 address.
+Returns a `Promise` for your public IPv6 address. Will reject on error or timeout.
 
 #### options
 
@@ -48,7 +49,7 @@ Type: `Object`
 Type: `boolean`<br>
 Default: `false`
 
-Use a HTTPS check using the [icanhazip.com](https://github.com/major/icanhaz) service instead of the DNS query. This check is much more secure and tamper-proof, but also a lot slower.
+Use a HTTPS check using the [icanhazip.com](https://github.com/major/icanhaz) service instead of the DNS query. This check is much more secure and tamper-proof, but also a lot slower. **This option is only available in the Node.js version**.
 
 ##### timeout
 
