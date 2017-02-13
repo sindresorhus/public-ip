@@ -16,8 +16,8 @@ function queryHttps(version, opts) {
 		const xhr = new XMLHttpRequest();
 
 		xhr.timeout = opts.timeout;
-		xhr.onerror = () => doReject;
-		xhr.ontimeout = () => doReject;
+		xhr.onerror = doReject;
+		xhr.ontimeout = doReject;
 		xhr.onload = () => {
 			const ip = xhr.responseText.trim();
 
