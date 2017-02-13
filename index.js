@@ -49,6 +49,9 @@ const queryDns = (version, opts) => {
 		}
 
 		return ip;
+	}).catch(err => {
+		socket.destroy();
+		throw err;
 	});
 };
 
