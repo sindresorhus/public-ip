@@ -54,7 +54,7 @@ const queryDns = (version, opts) => {
 
 const queryHttps = (version, opts) => {
 	const gotOpts = {
-		family: (version === 'v6') ? 6 : 4,
+		family: version === 'v6' ? 6 : 4,
 		retries: 0,
 		timeout: opts.timeout
 	};

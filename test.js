@@ -18,7 +18,7 @@ test('IPv4 HTTPS timeout', async t => {
 	t.true(isIp.v4(await m.v4({https: true, timeout: 4000})));
 });
 
-// impossible DNS timeouts seems unreliable to test on a working connection
+// Impossible DNS timeouts seems unreliable to test on a working connection
 // because of caches, so we're only testing HTTPS
 
 test('IPv4 HTTPS impossible timeout', async t => {

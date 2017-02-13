@@ -1,5 +1,4 @@
 'use strict';
-
 const isIp = require('is-ip');
 
 const defaults = {
