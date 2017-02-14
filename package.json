@@ -22,7 +22,8 @@
     ]
   },
   "files": [
-    "index.js"
+    "index.js",
+    "browser.js"
   ],
   "keywords": [
     "get",
