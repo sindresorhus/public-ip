@@ -15,9 +15,6 @@ function queryHttps(version, opts) {
 		const doReject = () => reject(new Error('Couldn\'t find your IP'));
 		const xhr = new XMLHttpRequest();
 
-		xhr.timeout = opts.timeout;
-		xhr.onerror = doReject;
-		xhr.ontimeout = doReject;
 		xhr.onload = () => {
 			const ip = xhr.responseText.trim();
 
@@ -29,6 +26,9 @@ function queryHttps(version, opts) {
 		};
 
 		xhr.open('GET', urls[version]);
+		xhr.timeout = opts.timeout;
+		xhr.onerror = doReject;
+		xhr.ontimeout = doReject;
 		xhr.send();
 	});
 }
