@@ -46,7 +46,6 @@
   },
   "devDependencies": {
     "ava": "*",
-    "is-ip": "^2.0.0",
     "xo": "*"
   },
   "browser": "browser.js"
