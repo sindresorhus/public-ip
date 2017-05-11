@@ -22,7 +22,7 @@ test('IPv4 HTTPS timeout', async t => {
 // because of caches, so we're only testing HTTPS
 
 test('IPv4 HTTPS impossible timeout', async t => {
-	t.throws(m.v4({https: true, timeout: 1}));
+	await t.throws(m.v4({https: true, timeout: 1}));
 });
 
 if (!process.env.CI) {
