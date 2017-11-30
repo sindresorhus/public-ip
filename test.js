@@ -32,7 +32,7 @@ test('IPv4 DNS cancellation', async t => {
 test('IPv4 HTTPS cancellation', async t => {
 	const timeout = 5000;
 	const start = process.hrtime();
-	const promise = m.v4({timeout: timeout, https: true});
+	const promise = m.v4({timeout, https: true});
 	promise.cancel();
 	await promise;
 	const diff = process.hrtime(start);

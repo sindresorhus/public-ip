@@ -79,7 +79,7 @@ const queryHttps = (version, opts) => {
 
 		return ip;
 	}).catch(err => {
-		// don't throw a cancellation error for consistency with DNS
+		// Don't throw a cancellation error for consistency with DNS
 		if (!(err instanceof got.CancelError)) {
 			throw err;
 		}
