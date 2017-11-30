@@ -38,7 +38,7 @@ const queryDns = (version, opts) => {
 		timeout: opts.timeout
 	});
 
-	return pify(socket.query.bind(socket))({
+	const promise = pify(socket.query.bind(socket))({
 		questions: [data.dnsQuestion]
 	}, 53, data.dnsServer).then(res => {
 		socket.destroy();
@@ -53,6 +53,12 @@ const queryDns = (version, opts) => {
 		socket.destroy();
 		throw err;
 	});
+
+	promise.cancel = () => {
+		socket.cancel();
+	};
+
+	return promise;
 };
 
 const queryHttps = (version, opts) => {
@@ -62,7 +68,9 @@ const queryHttps = (version, opts) => {
 		timeout: opts.timeout
 	};
 
-	return got(type[version].httpsUrl, gotOpts).then(res => {
+	const gotPromise = got(type[version].httpsUrl, gotOpts);
+
+	const promise = gotPromise.then(res => {
 		const ip = (res.body || '').trim();
 
 		if (!ip) {
@@ -70,7 +78,16 @@ const queryHttps = (version, opts) => {
 		}
 
 		return ip;
+	}).catch(err => {
+		// don't throw a cancellation error for consistency with DNS
+		if (!(err instanceof got.CancelError)) {
+			throw err;
+		}
 	});
+
+	promise.cancel = gotPromise.cancel;
+
+	return promise;
 };
 
 module.exports.v4 = opts => {

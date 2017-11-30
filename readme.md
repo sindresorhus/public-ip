@@ -33,12 +33,9 @@ publicIp.v6().then(ip => {
 ## API
 
 ### publicIp.v4([options])
-
-Returns a `Promise` for your public IPv4 address. Will reject on error or timeout.
-
 ### publicIp.v6([options])
 
-Returns a `Promise` for your public IPv6 address. Will reject on error or timeout.
+Returns a `Promise` which resolves to your public IPv4 or IPv6 address. Will reject on error or timeout. A `.cancel()` method is available on the promise, which can be used to cancel the request.
 
 #### options
 
