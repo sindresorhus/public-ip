@@ -11,9 +11,10 @@ const urls = {
 };
 
 function queryHttps(version, opts) {
-	return new Promise((resolve, reject) => {
+	let xhr;
+	const promise = new Promise((resolve, reject) => {
 		const doReject = () => reject(new Error('Couldn\'t find your IP'));
-		const xhr = new XMLHttpRequest();
+		xhr = new XMLHttpRequest();
 
 		xhr.onerror = doReject;
 		xhr.ontimeout = doReject;
@@ -31,6 +32,10 @@ function queryHttps(version, opts) {
 		xhr.timeout = opts.timeout;
 		xhr.send();
 	});
+	promise.cancel = () => {
+		xhr.abort();
+	}
+	return promise;
 }
 
 module.exports.v4 = opts => {
