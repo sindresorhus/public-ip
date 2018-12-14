@@ -49,9 +49,9 @@ const queryDns = (version, opts) => {
 		}
 
 		return ip;
-	}).catch(err => {
+	}).catch(error => {
 		socket.destroy();
-		throw err;
+		throw error;
 	});
 
 	promise.cancel = () => {
@@ -78,10 +78,10 @@ const queryHttps = (version, opts) => {
 		}
 
 		return ip;
-	}).catch(err => {
+	}).catch(error => {
 		// Don't throw a cancellation error for consistency with DNS
-		if (!(err instanceof got.CancelError)) {
-			throw err;
+		if (!(error instanceof got.CancelError)) {
+			throw error;
 		}
 	});
 

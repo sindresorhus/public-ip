@@ -16,9 +16,9 @@ function queryHttps(version, opts) {
 		const doReject = () => reject(new Error('Couldn\'t find your IP'));
 		xhr = new XMLHttpRequest();
 
-		xhr.onerror = doReject;
+		xhr.addEventListener('error', doReject);
 		xhr.ontimeout = doReject;
-		xhr.onload = () => {
+		xhr.addEventListener('load', () => {
 			const ip = xhr.responseText.trim();
 
 			if (!ip || !isIp[version](ip)) {
@@ -26,7 +26,7 @@ function queryHttps(version, opts) {
 			}
 
 			resolve(ip);
-		};
+		});
 
 		xhr.open('GET', urls[version]);
 		xhr.timeout = opts.timeout;
@@ -34,7 +34,7 @@ function queryHttps(version, opts) {
 	});
 	promise.cancel = () => {
 		xhr.abort();
-	}
+	};
 	return promise;
 }
 
