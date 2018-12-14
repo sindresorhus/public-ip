@@ -10,15 +10,18 @@ const urls = {
 	v6: 'https://ipv6.icanhazip.com/'
 };
 
-function queryHttps(version, opts) {
+const queryHttps = (version, options) => {
 	let xhr;
 	const promise = new Promise((resolve, reject) => {
-		const doReject = () => reject(new Error('Couldn\'t find your IP'));
-		xhr = new XMLHttpRequest();
+		const doReject = () => {
+			reject(new Error('Couldn\'t find your IP'));
+		};
 
-		xhr.onerror = doReject;
-		xhr.ontimeout = doReject;
-		xhr.onload = () => {
+		xhr = new XMLHttpRequest();
+		xhr.addEventListener('error', doReject, {once: true});
+		xhr.addEventListener('timeout', doReject, {once: true});
+
+		xhr.addEventListener('load', () => {
 			const ip = xhr.responseText.trim();
 
 			if (!ip || !isIp[version](ip)) {
@@ -26,24 +29,20 @@ function queryHttps(version, opts) {
 			}
 
 			resolve(ip);
-		};
+		}, {once: true});
 
 		xhr.open('GET', urls[version]);
-		xhr.timeout = opts.timeout;
+		xhr.timeout = options.timeout;
 		xhr.send();
 	});
+
 	promise.cancel = () => {
 		xhr.abort();
-	}
+	};
+
 	return promise;
-}
-
-module.exports.v4 = opts => {
-	opts = Object.assign({}, defaults, opts);
-	return queryHttps('v4', opts);
 };
 
-module.exports.v6 = opts => {
-	opts = Object.assign({}, defaults, opts);
-	return queryHttps('v6', opts);
-};
+module.exports.v4 = options => queryHttps('v4', {...defaults, ...options});
+
+module.exports.v6 = options => queryHttps('v6', {...defaults, ...options});

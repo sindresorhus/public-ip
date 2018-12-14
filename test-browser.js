@@ -1,8 +1,8 @@
-// Need to test manually in devtools
+// Need to test manually in DevTools
 // $ browserify test-browser.js | pbcopy
 'use strict';
 const publicIp = require('./browser');
 
-publicIp.v4().then(ip => {
-	console.log('ip', ip);
-});
+(async () => {
+	console.log('IP:', await publicIp.v4());
+})();

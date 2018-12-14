@@ -2,14 +2,13 @@
 
 > Get your public IP address - very fast!
 
-In Node.js, it queries the DNS records of OpenDNS which has an entry with your IP address.
+In Node.js, it queries the DNS records of OpenDNS which has an entry with your IP address. In browsers, it uses the excellent [icanhaz](https://github.com/major/icanhaz) service through HTTPS.
 
-In browsers, it uses the excellent [icanhaz](https://github.com/major/icanhaz) service through HTTPS.
 
 ## Install
 
 ```
-$ npm install --save public-ip
+$ npm install public-ip
 ```
 
 
@@ -18,15 +17,13 @@ $ npm install --save public-ip
 ```js
 const publicIp = require('public-ip');
 
-publicIp.v4().then(ip => {
-	console.log(ip);
+(async () => {
+	console.log(await publicIp.v4());
 	//=> '46.5.21.123'
-});
 
-publicIp.v6().then(ip => {
-	console.log(ip);
+	console.log(await publicIp.v6());
 	//=> 'fe80::200:f8ff:fe21:67cf'
-});
+})();
 ```
 
 
@@ -35,7 +32,7 @@ publicIp.v6().then(ip => {
 ### publicIp.v4([options])
 ### publicIp.v6([options])
 
-Returns a `Promise` which resolves to your public IPv4 or IPv6 address. Will reject on error or timeout. A `.cancel()` method is available on the promise, which can be used to cancel the request.
+Returns a `Promise` which resolves to your public IPv4 or IPv6 address. Rejects on error or timeout. A `.cancel()` method is available on the promise, which can be used to cancel the request.
 
 #### options
 

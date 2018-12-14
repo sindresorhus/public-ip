@@ -1,27 +1,27 @@
 import test from 'ava';
 import isIp from 'is-ip';
-import m from '.';
+import publicIp from '.';
 
 test('IPv4 DNS', async t => {
-	t.true(isIp.v4(await m.v4()));
+	t.true(isIp.v4(await publicIp.v4()));
 });
 
 test('IPv4 HTTPS', async t => {
-	t.true(isIp.v4(await m.v4({https: true})));
+	t.true(isIp.v4(await publicIp.v4({https: true})));
 });
 
 test('IPv4 DNS timeout', async t => {
-	t.true(isIp.v4(await m.v4({timeout: 2000})));
+	t.true(isIp.v4(await publicIp.v4({timeout: 2000})));
 });
 
 test('IPv4 HTTPS timeout', async t => {
-	t.true(isIp.v4(await m.v4({https: true, timeout: 4000})));
+	t.true(isIp.v4(await publicIp.v4({https: true, timeout: 4000})));
 });
 
 test('IPv4 DNS cancellation', async t => {
 	const timeout = 5000;
 	const start = process.hrtime();
-	const promise = m.v4({timeout});
+	const promise = publicIp.v4({timeout});
 	promise.cancel();
 	await promise;
 	const diff = process.hrtime(start);
@@ -32,7 +32,7 @@ test('IPv4 DNS cancellation', async t => {
 test('IPv4 HTTPS cancellation', async t => {
 	const timeout = 5000;
 	const start = process.hrtime();
-	const promise = m.v4({timeout, https: true});
+	const promise = publicIp.v4({timeout, https: true});
 	promise.cancel();
 	await promise;
 	const diff = process.hrtime(start);
@@ -44,15 +44,15 @@ test('IPv4 HTTPS cancellation', async t => {
 // because of caches, so we're only testing HTTPS
 
 test('IPv4 HTTPS impossible timeout', async t => {
-	await t.throws(m.v4({https: true, timeout: 1}));
+	await t.throws(publicIp.v4({https: true, timeout: 1}));
 });
 
 if (!process.env.CI) {
 	test('IPv6 DNS', async t => {
-		t.true(isIp.v6(await m.v6()));
+		t.true(isIp.v6(await publicIp.v6()));
 	});
 
 	test('IPv6 HTTPS', async t => {
-		t.true(isIp.v6(await m.v6({https: true})));
+		t.true(isIp.v6(await publicIp.v6({https: true})));
 	});
 }

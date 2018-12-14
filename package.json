@@ -1,52 +1,51 @@
 {
-  "name": "public-ip",
-  "version": "2.5.0",
-  "description": "Get your public IP address - very fast!",
-  "license": "MIT",
-  "repository": "sindresorhus/public-ip",
-  "author": {
-    "name": "Sindre Sorhus",
-    "email": "sindresorhus@gmail.com",
-    "url": "sindresorhus.com"
-  },
-  "engines": {
-    "node": ">=4"
-  },
-  "scripts": {
-    "test": "xo && ava test.js"
-  },
-  "xo": {
-    "envs": [
-      "node",
-      "browser"
-    ]
-  },
-  "files": [
-    "index.js",
-    "browser.js"
-  ],
-  "keywords": [
-    "get",
-    "ip",
-    "ipv4",
-    "ipv6",
-    "address",
-    "external",
-    "public",
-    "machine",
-    "fast",
-    "opendns",
-    "dns"
-  ],
-  "dependencies": {
-    "dns-socket": "^1.6.2",
-    "got": "^8.0.0",
-    "is-ip": "^2.0.0",
-    "pify": "^3.0.0"
-  },
-  "devDependencies": {
-    "ava": "*",
-    "xo": "*"
-  },
-  "browser": "browser.js"
+	"name": "public-ip",
+	"version": "2.5.0",
+	"description": "Get your public IP address - very fast!",
+	"license": "MIT",
+	"repository": "sindresorhus/public-ip",
+	"author": {
+		"name": "Sindre Sorhus",
+		"email": "sindresorhus@gmail.com",
+		"url": "sindresorhus.com"
+	},
+	"engines": {
+		"node": ">=8"
+	},
+	"scripts": {
+		"test": "xo && ava test.js"
+	},
+	"files": [
+		"index.js",
+		"browser.js"
+	],
+	"keywords": [
+		"get",
+		"ip",
+		"ipv4",
+		"ipv6",
+		"address",
+		"external",
+		"public",
+		"machine",
+		"fast",
+		"opendns",
+		"dns"
+	],
+	"dependencies": {
+		"dns-socket": "^4.1.1",
+		"got": "^9.4.0",
+		"is-ip": "^2.0.0"
+	},
+	"devDependencies": {
+		"ava": "^0.25.0",
+		"xo": "^0.23.0"
+	},
+	"browser": "browser.js",
+	"xo": {
+		"envs": [
+			"node",
+			"browser"
+		]
+	}
 }
