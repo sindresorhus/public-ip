@@ -13,10 +13,11 @@
 		"node": ">=8"
 	},
 	"scripts": {
-		"test": "xo && ava test.js"
+		"test": "xo && ava test.js && tsd"
 	},
 	"files": [
 		"index.js",
+		"index.d.ts",
 		"browser.js"
 	],
 	"keywords": [
@@ -33,13 +34,14 @@
 		"dns"
 	],
 	"dependencies": {
-		"dns-socket": "^4.1.1",
-		"got": "^9.4.0",
-		"is-ip": "^2.0.0"
+		"dns-socket": "^4.2.0",
+		"got": "^9.6.0",
+		"is-ip": "^3.0.0"
 	},
 	"devDependencies": {
-		"ava": "^0.25.0",
-		"xo": "^0.23.0"
+		"ava": "^1.4.1",
+		"tsd": "^0.7.2",
+		"xo": "^0.24.0"
 	},
 	"browser": "browser.js",
 	"xo": {

@@ -24,9 +24,9 @@ test('IPv4 DNS cancellation', async t => {
 	const promise = publicIp.v4({timeout});
 	promise.cancel();
 	await promise;
-	const diff = process.hrtime(start);
-	const msecs = ((diff[0] * 1e9) + diff[1]) / 1e6;
-	t.true(msecs < timeout);
+	const difference = process.hrtime(start);
+	const milliseconds = ((difference[0] * 1e9) + difference[1]) / 1e6;
+	t.true(milliseconds < timeout);
 });
 
 test('IPv4 HTTPS cancellation', async t => {
@@ -35,9 +35,9 @@ test('IPv4 HTTPS cancellation', async t => {
 	const promise = publicIp.v4({timeout, https: true});
 	promise.cancel();
 	await promise;
-	const diff = process.hrtime(start);
-	const msecs = ((diff[0] * 1e9) + diff[1]) / 1e6;
-	t.true(msecs < timeout);
+	const difference = process.hrtime(start);
+	const milliseconds = ((difference[0] * 1e9) + difference[1]) / 1e6;
+	t.true(milliseconds < timeout);
 });
 
 // Impossible DNS timeouts seems unreliable to test on a working connection

@@ -51,7 +51,7 @@ const queryDns = (version, options) => {
 		}
 
 		return ip;
-	}).catch(error => { // TODO: Move both the `socket.destroy()` calls into a `Promise#finally()` handerl when targeting Node.js 10.
+	}).catch(error => { // TODO: Move both the `socket.destroy()` calls into a `Promise#finally()` handler when targeting Node.js 10.
 		socket.destroy();
 		throw error;
 	});
