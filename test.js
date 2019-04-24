@@ -44,7 +44,7 @@ test('IPv4 HTTPS cancellation', async t => {
 // because of caches, so we're only testing HTTPS
 
 test('IPv4 HTTPS impossible timeout', async t => {
-	await t.throws(publicIp.v4({https: true, timeout: 1}));
+	await t.throwsAsync(publicIp.v4({https: true, timeout: 1}));
 });
 
 if (!process.env.CI) {
