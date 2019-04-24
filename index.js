@@ -64,29 +64,36 @@ const queryDns = (version, options) => {
 };
 
 const queryHttps = (version, options) => {
-	const gotPromise = got(type[version].httpsUrl, {
-		family: version === 'v6' ? 6 : 4,
-		retries: 0,
-		timeout: options.timeout
-	});
+	let cancel;
 
-	// eslint-disable-next-line promise/prefer-await-to-then
-	const promise = gotPromise.then(({body}) => {
-		const ip = (body || '').trim();
+	const promise = (async () => {
+		try {
+			const gotPromise = got(type[version].httpsUrl, {
+				family: version === 'v6' ? 6 : 4,
+				retries: 0,
+				timeout: options.timeout
+			});
 
-		if (!ip) {
-			throw new Error('Couldn\'t find your IP');
+			cancel = gotPromise.cancel;
+
+			const {body} = await gotPromise;
+
+			const ip = (body || '').trim();
+
+			if (!ip) {
+				throw new Error('Couldn\'t find your IP');
+			}
+
+			return ip;
+		} catch (error) {
+			// Don't throw a cancellation error for consistency with DNS
+			if (!(error instanceof got.CancelError)) {
+				throw error;
+			}
 		}
+	})();
 
-		return ip;
-	}).catch(error => {
-		// Don't throw a cancellation error for consistency with DNS
-		if (!(error instanceof got.CancelError)) {
-			throw error;
-		}
-	});
-
-	promise.cancel = gotPromise.cancel;
+	promise.cancel = cancel;
 
 	return promise;
 };
