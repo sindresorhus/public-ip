@@ -32,11 +32,11 @@ const publicIp = require('public-ip');
 ### publicIp.v4([options])
 ### publicIp.v6([options])
 
-Returns a `Promise` which resolves to your public IPv4 or IPv6 address. Rejects on error or timeout. A `.cancel()` method is available on the promise, which can be used to cancel the request.
+Returns a `Promise<string>` with your public IPv4 or IPv6 address. Rejects on error or timeout. A `.cancel()` method is available on the promise, which can be used to cancel the request.
 
 #### options
 
-Type: `Object`
+Type: `object`
 
 ##### https
 
