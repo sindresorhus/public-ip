@@ -17,7 +17,8 @@ const type = {
 			name: 'myip.opendns.com',
 			type: 'A'
 		},
-		httpsUrl: 'https://ipv4.icanhazip.com/'
+		httpsUrl: 'https://ipv4.icanhazip.com/',
+		httpsBackupUrl: 'https://api.ipify.org'
 	},
 	v6: {
 		dnsServer: '2620:0:ccc::2',
@@ -25,7 +26,8 @@ const type = {
 			name: 'myip.opendns.com',
 			type: 'AAAA'
 		},
-		httpsUrl: 'https://ipv6.icanhazip.com/'
+		httpsUrl: 'https://ipv6.icanhazip.com/',
+		httpsBackupUrl: 'https://api6.ipify.org'
 	}
 };
 
@@ -76,9 +78,22 @@ const queryHttps = (version, options) => {
 
 			cancel = gotPromise.cancel;
 
-			const {body} = await gotPromise;
+			let response;
+			try {
+				response = await gotPromise;
+			} catch (error) {
+				const gotBackupPromise = got(type[version].httpsBackupUrl, {
+					family: version === 'v6' ? 6 : 4,
+					retries: 0,
+					timeout: options.timeout
+				});
 
-			const ip = (body || '').trim();
+				cancel = gotBackupPromise.cancel;
+
+				response = await gotBackupPromise;
+			}
+
+			const ip = (response.body || '').trim();
 
 			if (!ip) {
 				throw new Error('Couldn\'t find your IP');
