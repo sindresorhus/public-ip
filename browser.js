@@ -40,28 +40,22 @@ const sendXhr = async (url, options, version) => {
 };
 
 const queryHttps = async (version, options) => {
-	const promise = new Promise((resolve, reject) => {
-		(async () => {
-			let ip;
-			try {
-				ip = await sendXhr(urls[version], options, version);
-			} catch (error) {
-				try {
-					ip = await sendXhr(fallbackUrls[version], options, version);
-				} catch (error) {
-					reject(new Error('Couldn\'t find your IP'));
-				}
-			}
+	let ip;
+	try {
+		ip = await sendXhr(urls[version], options, version);
+	} catch (error) {
+		try {
+			ip = await sendXhr(fallbackUrls[version], options, version);
+		} catch (error) {
+			return Promise.reject(new Error('Couldn\'t find your IP'));
+		}
+	}
 
-			resolve(ip);
-		})();
-	});
+	return ip;
+};
 
-	promise.cancel = () => {
-		xhr.abort();
-	};
-
-	return promise;
+queryHttps.cancel = () => {
+	xhr.abort();
 };
 
 module.exports.v4 = options => queryHttps('v4', {...defaults, ...options});

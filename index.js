@@ -70,13 +70,13 @@ const queryHttps = (version, options) => {
 
 	const promise = (async () => {
 		try {
-			const requestOpts = {
+			const requestOptions = {
 				family: version === 'v6' ? 6 : 4,
 				retries: 0,
 				timeout: options.timeout
 			};
 
-			const gotPromise = got(type[version].httpsUrl, requestOpts);
+			const gotPromise = got(type[version].httpsUrl, requestOptions);
 
 			cancel = gotPromise.cancel;
 
@@ -84,7 +84,7 @@ const queryHttps = (version, options) => {
 			try {
 				response = await gotPromise;
 			} catch (error) {
-				const gotBackupPromise = got(type[version].httpsFallbackUrl, requestOpts);
+				const gotBackupPromise = got(type[version].httpsFallbackUrl, requestOptions);
 
 				cancel = gotBackupPromise.cancel;
 

@@ -45,6 +45,8 @@ Default: `false`
 
 Use a HTTPS check using the [icanhazip.com](https://github.com/major/icanhaz) service instead of the DNS query. This check is much more secure and tamper-proof, but also a lot slower. **This option is only available in the Node.js version**.
 
+This library uses [ipify.org](https://www.ipify.org) as a fallback service for HTTPS check. In case `icanhazip.com` fails, this library will automatically query `ipify.org` service.
+
 ##### timeout
 
 Type: `number`<br>
