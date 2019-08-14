@@ -29,8 +29,8 @@ const publicIp = require('public-ip');
 
 ## API
 
-### publicIp.v4([options])
-### publicIp.v6([options])
+### publicIp.v4(options?)
+### publicIp.v6(options?)
 
 Returns a `Promise<string>` with your public IPv4 or IPv6 address. Rejects on error or timeout. A `.cancel()` method is available on the promise, which can be used to cancel the request.
 
@@ -55,6 +55,7 @@ The time in milliseconds until a request is considered timed out.
 
 ## Maintainers
 
+- [Sindre Sorhus](https://github.com/sindresorhus)
 - [silverwind](https://github.com/silverwind)
 
 
@@ -62,8 +63,3 @@ The time in milliseconds until a request is considered timed out.
 
 - [public-ip-cli](https://github.com/sindresorhus/public-ip-cli) - CLI for this module
 - [internal-ip](https://github.com/sindresorhus/internal-ip) - Get your internal IP address
-
-
-## License
-
-MIT © [Sindre Sorhus](https://sindresorhus.com)

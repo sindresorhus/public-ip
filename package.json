@@ -36,11 +36,11 @@
 	"dependencies": {
 		"dns-socket": "^4.2.0",
 		"got": "^9.6.0",
-		"is-ip": "^3.0.0"
+		"is-ip": "^3.1.0"
 	},
 	"devDependencies": {
-		"ava": "^1.4.1",
-		"tsd": "^0.7.2",
+		"ava": "^2.2.0",
+		"tsd": "^0.7.4",
 		"xo": "^0.24.0"
 	},
 	"browser": "browser.js",
