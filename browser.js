@@ -10,37 +10,52 @@ const urls = {
 	v6: 'https://ipv6.icanhazip.com/'
 };
 
-const queryHttps = (version, options) => {
-	let xhr;
-	const promise = new Promise((resolve, reject) => {
-		const doReject = () => {
-			reject(new Error('Couldn\'t find your IP'));
-		};
+const fallbackUrls = {
+	v4: 'https://api.ipify.org',
+	v6: 'https://api6.ipify.org'
+};
 
+let xhr;
+
+const sendXhr = async (url, options, version) => {
+	return new Promise((resolve, reject) => {
 		xhr = new XMLHttpRequest();
-		xhr.addEventListener('error', doReject, {once: true});
-		xhr.addEventListener('timeout', doReject, {once: true});
+		xhr.addEventListener('error', reject, {once: true});
+		xhr.addEventListener('timeout', reject, {once: true});
 
 		xhr.addEventListener('load', () => {
 			const ip = xhr.responseText.trim();
 
 			if (!ip || !isIp[version](ip)) {
-				doReject();
+				reject();
 			}
 
 			resolve(ip);
 		}, {once: true});
 
-		xhr.open('GET', urls[version]);
+		xhr.open('GET', url);
 		xhr.timeout = options.timeout;
 		xhr.send();
 	});
+};
 
-	promise.cancel = () => {
-		xhr.abort();
-	};
+const queryHttps = async (version, options) => {
+	let ip;
+	try {
+		ip = await sendXhr(urls[version], options, version);
+	} catch (_) {
+		try {
+			ip = await sendXhr(fallbackUrls[version], options, version);
+		} catch (_) {
+			throw new Error('Couldn\'t find your IP');
+		}
+	}
 
-	return promise;
+	return ip;
+};
+
+queryHttps.cancel = () => {
+	xhr.abort();
 };
 
 module.exports.v4 = options => queryHttps('v4', {...defaults, ...options});
