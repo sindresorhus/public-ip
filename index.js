@@ -83,7 +83,7 @@ const queryHttps = (version, options) => {
 			let response;
 			try {
 				response = await gotPromise;
-			} catch (error) {
+			} catch (_) {
 				const gotBackupPromise = got(type[version].httpsFallbackUrl, requestOptions);
 
 				cancel = gotBackupPromise.cancel;

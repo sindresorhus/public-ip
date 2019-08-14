@@ -43,11 +43,11 @@ const queryHttps = async (version, options) => {
 	let ip;
 	try {
 		ip = await sendXhr(urls[version], options, version);
-	} catch (error) {
+	} catch (_) {
 		try {
 			ip = await sendXhr(fallbackUrls[version], options, version);
-		} catch (error) {
-			return Promise.reject(new Error('Couldn\'t find your IP'));
+		} catch (_) {
+			throw new Error('Couldn\'t find your IP');
 		}
 	}
 
