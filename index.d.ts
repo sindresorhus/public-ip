@@ -1,11 +1,18 @@
 declare namespace publicIp {
 	interface Options {
 		/**
-		Use a HTTPS check using the [icanhazip.com](https://github.com/major/icanhaz) service instead of the DNS query. This check is much more secure and tamper-proof, but also a lot slower. **This option is only available in the Node.js version**.
+		Use or disable a HTTPS check using the [icanhazip.com](https://github.com/major/icanhaz) service instead of the DNS query. This check is much more secure and tamper-proof, but also a lot slower. **This option is only available in the Node.js version**.
 
-		@default false
+		@default null
 		*/
 		readonly https?: boolean;
+
+		/**
+		Use or disable a DNS check using opendns or google dns services.
+
+		@default null
+		*/
+		readonly dns?: boolean;
 
 		/**
 		The time in milliseconds until a request is considered timed out.
