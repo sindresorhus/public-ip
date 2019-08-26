@@ -1,13 +1,67 @@
 import test from 'ava';
 import isIp from 'is-ip';
+import {
+	restore as restoreDnsMock,
+	ignore as ignoreDnsHost,
+	ignored as getIgnoredDnsHosts,
+	called as getDnsCalledCount
+} from './mocks/dns-socket';
+import {
+	restore as restoreGotMock,
+	called as getGotCalledCount,
+	ignore as ignoreGotHosts,
+	ignored as getIgnoredGotHosts
+} from './mocks/got';
 import publicIp from '.';
 
-test('IPv4 DNS', async t => {
-	t.true(isIp.v4(await publicIp.v4()));
+test.afterEach(() => {
+	restoreDnsMock();
+	restoreGotMock();
 });
 
-test('IPv4 HTTPS', async t => {
+test('IPv4 DNS - No HTTPS call', async t => {
+	t.true(isIp.v4(await publicIp.v4()));
+	t.true(getDnsCalledCount() > 0);
+	t.true(getIgnoredDnsHosts().length === 0);
+	t.true(getGotCalledCount() === 0);
+});
+
+test('IPv4 DNS failure fallbacks to HTTPS', async t => {
+	ignoreDnsHost(/.*/);
+	const ip = await publicIp.v4();
+	t.true(isIp.v4(ip));
+	t.true(getIgnoredDnsHosts().length === 8);
+	t.true(getGotCalledCount() > 0);
+});
+
+test('IPv4 DNS failure opendns fallbacks to google dns', async t => {
+	ignoreDnsHost(/opendns/);
+	const ip = await publicIp.v4();
+	t.true(isIp.v4(ip));
+	t.true(getIgnoredDnsHosts().length === 4);
+	t.true(getGotCalledCount() === 0);
+});
+
+test('IPv4 HTTPS - No DNS call', async t => {
 	t.true(isIp.v4(await publicIp.v4({https: true})));
+	t.true(getDnsCalledCount() === 0);
+});
+
+test('IPv4 HTTPS Disabled - Should only call DNS', async t => {
+	ignoreDnsHost(/.*/);
+	await t.throwsAsync(publicIp.v4({https: false}));
+	t.true(getDnsCalledCount() > 0);
+	t.true(getGotCalledCount() === 0);
+});
+
+test('IPv4 HTTPS Uses custom urls', async t => {
+	ignoreGotHosts(/com|org/);
+	t.true(isIp.v4(await publicIp.v4({https: true, urls: [
+		'https://ifconfig.co/ip',
+		'https://ifconfig.io/ip'
+	]})));
+	t.true(getIgnoredGotHosts().length === 2);
+	t.true(getDnsCalledCount() === 0);
 });
 
 test('IPv4 DNS timeout', async t => {

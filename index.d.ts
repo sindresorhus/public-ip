@@ -8,13 +8,6 @@ declare namespace publicIp {
 		readonly https?: boolean;
 
 		/**
-		Use or disable a DNS check using opendns or google dns services.
-
-		@default null
-		*/
-		readonly dns?: boolean;
-
-		/**
 		The time in milliseconds until a request is considered timed out.
 
 		@default 5000

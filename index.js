@@ -2,7 +2,7 @@
 const {promisify} = require('util');
 const dgram = require('dgram');
 const dns = require('dns-socket');
-const got = require('got');
+const {get: got, CancelError} = require('got');
 const isIp = require('is-ip');
 
 const defaults = {
@@ -81,55 +81,37 @@ const queryDns = (version, options) => {
 	const socketQuery = promisify(socket.query.bind(socket));
 
 	const promise = (async () => {
-		let internalPromise = Promise.resolve();
-
-		data.dnsServers.forEach(dnsServerInfo => {
+		for (const dnsServerInfo of data.dnsServers) {
 			const {servers, question} = dnsServerInfo;
-			servers.forEach(server => {
-				// eslint-disable-next-line promise/prefer-await-to-then
-				internalPromise = internalPromise.then(async ip => {
-					if (ip) {
-						return ip;
-					}
+			for (const server of servers) {
+				try {
+					const {name, type, clean} = question;
 
-					try {
-						const {name, type, clean} = question;
+					// eslint-disable-next-line no-await-in-loop
+					const dnsResponse = await socketQuery({questions: [{name, type}]}, 53, server);
 
-						const dnsResponse = await socketQuery({questions: [{name, type}]}, 53, server);
-
-						const {
-							answers: {
-								0: {
-									data
-								}
+					const {
+						answers: {
+							0: {
+								data
 							}
-						} = dnsResponse;
-
-						const response = typeof data === 'string' ? data.trim() : data.toString().trim();
-
-						const ip = clean ? clean(response) : response;
-
-						if (!ip || !isIp[version](ip)) {
-							return null;
 						}
+					} = dnsResponse;
 
+					const response = typeof data === 'string' ? data.trim() : data.toString().trim();
+
+					const ip = clean ? clean(response) : response;
+
+					if (ip && isIp[version](ip)) {
 						return ip;
-					} catch (error) {
-						return null;
 					}
-				});
-			});
-		});
-
-		const ip = await internalPromise;
+				} catch (_) {}
+			}
+		}
 
 		socket.destroy();
 
-		if (!ip) {
-			throw new Error('Couldn\'t find your IP');
-		}
-
-		return ip;
+		throw new Error('Couldn\'t find your IP');
 	})();
 
 	promise.cancel = () => {
@@ -140,9 +122,9 @@ const queryDns = (version, options) => {
 };
 
 const queryHttps = (version, options) => {
-	const promise = (async () => {
-		let internalPromise = Promise.resolve();
+	let cancel;
 
+	const promise = (async () => {
 		try {
 			const requestOptions = {
 				family: version === 'v6' ? 6 : 4,
@@ -152,58 +134,36 @@ const queryHttps = (version, options) => {
 
 			const urls = [].concat.apply(type[version].httpsUrls, options.urls || []);
 
-			urls.forEach(url => {
-				// eslint-disable-next-line promise/prefer-await-to-then
-				internalPromise = internalPromise.then(async ip => {
-					if (ip) {
-						return ip;
-					}
-
-					if (promise._cancelled) {
-						throw new got.CancelError();
-					}
-
+			for (const url of urls) {
+				try {
 					const gotPromise = got(url, requestOptions);
-					promise.cancel = gotPromise.cancel;
+					cancel = gotPromise.cancel;
 
-					try {
-						const response = await gotPromise;
+					// eslint-disable-next-line no-await-in-loop
+					const response = await gotPromise;
 
-						const ip = (response.body || '').trim();
+					const ip = (response.body || '').trim();
 
-						if (!ip || !isIp[version](ip)) {
-							return null;
-						}
-
+					if (ip && isIp[version](ip)) {
 						return ip;
-					} catch (error) {
-						if (error instanceof got.CancelError) {
-							throw error;
-						}
-
-						return null;
 					}
-				});
-			});
-
-			const ip = await internalPromise;
-
-			if (!ip) {
-				throw new Error('Couldn\'t find your IP');
+				} catch (error) {
+					if (error instanceof CancelError) {
+						throw error;
+					}
+				}
 			}
 
-			return ip;
+			throw new Error('Couldn\'t find your IP');
 		} catch (error) {
 			// Don't throw a cancellation error for consistency with DNS
-			if (!(error instanceof got.CancelError)) {
+			if (!(error instanceof CancelError)) {
 				throw error;
 			}
 		}
 	})();
 
-	promise.cancel = () => {
-		promise._cancelled = true;
-	};
+	promise.cancel = cancel;
 
 	return promise;
 };
@@ -236,7 +196,7 @@ module.exports.v4 = options => {
 		...options
 	};
 
-	if (!('dns' in options || 'https' in options)) {
+	if (!('https' in options)) {
 		return queryAll('v4', options);
 	}
 
@@ -253,7 +213,7 @@ module.exports.v6 = options => {
 		...options
 	};
 
-	if (!('dns' in options || 'https' in options)) {
+	if (!('https' in options)) {
 		return queryAll('v6', options);
 	}
 
