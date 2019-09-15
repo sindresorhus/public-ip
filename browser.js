@@ -6,13 +6,14 @@ const defaults = {
 };
 
 const urls = {
-	v4: 'https://ipv4.icanhazip.com/',
-	v6: 'https://ipv6.icanhazip.com/'
-};
-
-const fallbackUrls = {
-	v4: 'https://api.ipify.org',
-	v6: 'https://api6.ipify.org'
+	v4: [
+		'https://ipv4.icanhazip.com/',
+		'https://api.ipify.org'
+	],
+	v6: [
+		'https://ipv6.icanhazip.com/',
+		'https://api6.ipify.org'
+	]
 };
 
 let xhr;
@@ -27,7 +28,7 @@ const sendXhr = async (url, options, version) => {
 			const ip = xhr.responseText.trim();
 
 			if (!ip || !isIp[version](ip)) {
-				reject();
+				return reject();
 			}
 
 			resolve(ip);
@@ -41,17 +42,16 @@ const sendXhr = async (url, options, version) => {
 
 const queryHttps = async (version, options) => {
 	let ip;
-	try {
-		ip = await sendXhr(urls[version], options, version);
-	} catch (_) {
+	const _urls = [].concat.apply(urls[version], options.urls || []);
+	for (const url of _urls) {
 		try {
-			ip = await sendXhr(fallbackUrls[version], options, version);
-		} catch (_) {
-			throw new Error('Couldn\'t find your IP');
-		}
+			// eslint-disable-next-line no-await-in-loop
+			ip = await sendXhr(url, options, version);
+			return ip;
+		} catch (_) {}
 	}
 
-	return ip;
+	throw new Error('Couldn\'t find your IP');
 };
 
 queryHttps.cancel = () => {

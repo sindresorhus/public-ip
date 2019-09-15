@@ -11,34 +11,44 @@ const defaults = {
 
 const dnsServers = [
 	{
-		servers: [
-			'resolver1.opendns.com',
-			'resolver2.opendns.com',
-			'resolver3.opendns.com',
-			'resolver4.opendns.com'
-		],
 		v4: {
+			servers: [
+				'208.67.222.222',
+				'208.67.220.220',
+				'208.67.222.220',
+				'208.67.220.222'
+			],
 			name: 'myip.opendns.com',
 			type: 'A'
 		},
 		v6: {
+			servers: [
+				'2620:0:ccc::2',
+				'2620:0:ccd::2'
+			],
 			name: 'myip.opendns.com',
 			type: 'AAAA'
 		}
 	},
 	{
-		servers: [
-			'ns1.google.com',
-			'ns2.google.com',
-			'ns3.google.com',
-			'ns4.google.com'
-		],
 		v4: {
+			servers: [
+				'216.239.32.10',
+				'216.239.34.10',
+				'216.239.36.10',
+				'216.239.38.10'
+			],
 			name: 'o-o.myaddr.l.google.com',
 			type: 'TXT',
 			clean: ip => ip.replace(/"/g, '')
 		},
 		v6: {
+			servers: [
+				'2001:4860:4802:32::a',
+				'2001:4860:4802:34::a',
+				'2001:4860:4802:36::a',
+				'2001:4860:4802:38::a'
+			],
 			name: 'o-o.myaddr.l.google.com',
 			type: 'TXT',
 			clean: ip => ip.replace(/"/g, '')
@@ -48,9 +58,8 @@ const dnsServers = [
 
 const type = {
 	v4: {
-		dnsServers: dnsServers.map(({servers, v4}) => ({
-			servers,
-			question: v4
+		dnsServers: dnsServers.map(({v4: {servers, ...question}}) => ({
+			servers, question
 		})),
 		httpsUrls: [
 			'https://ipv4.icanhazip.com/',
@@ -58,9 +67,8 @@ const type = {
 		]
 	},
 	v6: {
-		dnsServers: dnsServers.map(({servers, v6}) => ({
-			servers,
-			question: v6
+		dnsServers: dnsServers.map(({v6: {servers, ...question}}) => ({
+			servers, question
 		})),
 		httpsUrls: [
 			'https://ipv6.icanhazip.com/',
@@ -103,6 +111,7 @@ const queryDns = (version, options) => {
 					const ip = clean ? clean(response) : response;
 
 					if (ip && isIp[version](ip)) {
+						socket.destroy();
 						return ip;
 					}
 				} catch (_) {}
@@ -163,7 +172,9 @@ const queryHttps = (version, options) => {
 		}
 	})();
 
-	promise.cancel = cancel;
+	promise.cancel = function () {
+		return cancel.apply(this);
+	};
 
 	return promise;
 };
