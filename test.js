@@ -16,7 +16,7 @@ test.serial('IPv4 DNS - No HTTPS call', async t => {
 	t.is(gotStub.called(), 0);
 });
 
-test.serial('IPv4 DNS failure fallbacks to HTTPS', async t => {
+test.serial('IPv4 DNS failure falls back to HTTPS', async t => {
 	dnsStub.ignore(/.*/);
 	const ip = await publicIp.v4();
 	t.true(isIp.v4(ip));
@@ -24,7 +24,7 @@ test.serial('IPv4 DNS failure fallbacks to HTTPS', async t => {
 	t.true(gotStub.called() > 0);
 });
 
-test.serial('IPv4 DNS failure opendns fallbacks to google DNS', async t => {
+test.serial('IPv4 DNS failure OpenDNS falls back to Google DNS', async t => {
 	dnsStub.ignore(/^208\./);
 	const ip = await publicIp.v4();
 	t.true(isIp.v4(ip));
@@ -33,20 +33,13 @@ test.serial('IPv4 DNS failure opendns fallbacks to google DNS', async t => {
 });
 
 test.serial('IPv4 HTTPS - No DNS call', async t => {
-	t.true(isIp.v4(await publicIp.v4({https: true})));
+	t.true(isIp.v4(await publicIp.v4({onlyHttps: true})));
 	t.is(dnsStub.called(), 0);
-});
-
-test.serial('IPv4 HTTPS Disabled - Should only call DNS', async t => {
-	dnsStub.ignore(/.*/);
-	await t.throwsAsync(publicIp.v4({https: false}));
-	t.true(dnsStub.called() > 0);
-	t.is(gotStub.called(), 0);
 });
 
 test.serial('IPv4 HTTPS uses custom URLs', async t => {
 	gotStub.ignore(/com|org/);
-	t.true(isIp.v4(await publicIp.v4({https: true, urls: [
+	t.true(isIp.v4(await publicIp.v4({onlyHttps: true, fallbackUrls: [
 		'https://ifconfig.co/ip',
 		'https://ifconfig.io/ip'
 	]})));
@@ -59,7 +52,7 @@ test.serial('IPv4 DNS timeout', async t => {
 });
 
 test.serial('IPv4 HTTPS timeout', async t => {
-	t.true(isIp.v4(await publicIp.v4({https: true, timeout: 4000})));
+	t.true(isIp.v4(await publicIp.v4({onlyHttps: true, timeout: 4000})));
 });
 
 test.serial('IPv4 DNS cancellation', async t => {
@@ -88,7 +81,7 @@ test.serial('IPv4 HTTPS cancellation', async t => {
 // because of caches, so we're only testing HTTPS
 
 test.serial('IPv4 HTTPS impossible timeout', async t => {
-	await t.throwsAsync(publicIp.v4({https: true, timeout: 1}));
+	await t.throwsAsync(publicIp.v4({onlyHttps: true, timeout: 1}));
 });
 
 if (!process.env.CI) {
@@ -97,6 +90,6 @@ if (!process.env.CI) {
 	});
 
 	test.serial('IPv6 HTTPS', async t => {
-		t.true(isIp.v6(await publicIp.v6({https: true})));
+		t.true(isIp.v6(await publicIp.v6({onlyHttps: true})));
 	});
 }

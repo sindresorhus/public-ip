@@ -6,7 +6,8 @@ const {get: got, CancelError} = require('got');
 const isIp = require('is-ip');
 
 const defaults = {
-	timeout: 5000
+	timeout: 5000,
+	onlyHttps: false
 };
 
 const dnsServers = [
@@ -40,7 +41,7 @@ const dnsServers = [
 			],
 			name: 'o-o.myaddr.l.google.com',
 			type: 'TXT',
-			clean: ip => ip.replace(/"/g, '')
+			transform: ip => ip.replace(/"/g, '')
 		},
 		v6: {
 			servers: [
@@ -51,7 +52,7 @@ const dnsServers = [
 			],
 			name: 'o-o.myaddr.l.google.com',
 			type: 'TXT',
-			clean: ip => ip.replace(/"/g, '')
+			transform: ip => ip.replace(/"/g, '')
 		}
 	}
 ];
@@ -93,7 +94,7 @@ const queryDns = (version, options) => {
 			const {servers, question} = dnsServerInfo;
 			for (const server of servers) {
 				try {
-					const {name, type, clean} = question;
+					const {name, type, transform} = question;
 
 					// eslint-disable-next-line no-await-in-loop
 					const dnsResponse = await socketQuery({questions: [{name, type}]}, 53, server);
@@ -106,9 +107,9 @@ const queryDns = (version, options) => {
 						}
 					} = dnsResponse;
 
-					const response = typeof data === 'string' ? data.trim() : data.toString().trim();
+					const response = (typeof data === 'string' ? data : data.toString()).trim();
 
-					const ip = clean ? clean(response) : response;
+					const ip = transform ? transform(response) : response;
 
 					if (ip && isIp[version](ip)) {
 						socket.destroy();
@@ -141,7 +142,7 @@ const queryHttps = (version, options) => {
 				timeout: options.timeout
 			};
 
-			const urls = [].concat.apply(type[version].httpsUrls, options.urls || []);
+			const urls = [].concat.apply(type[version].httpsUrls, options.fallbackUrls || []);
 
 			for (const url of urls) {
 				try {
@@ -207,11 +208,11 @@ module.exports.v4 = options => {
 		...options
 	};
 
-	if (!('https' in options)) {
+	if (!options.onlyHttps) {
 		return queryAll('v4', options);
 	}
 
-	if (options.https) {
+	if (options.onlyHttps) {
 		return queryHttps('v4', options);
 	}
 
@@ -224,11 +225,11 @@ module.exports.v6 = options => {
 		...options
 	};
 
-	if (!('https' in options)) {
+	if (!options.onlyHttps) {
 		return queryAll('v6', options);
 	}
 
-	if (options.https) {
+	if (options.onlyHttps) {
 		return queryHttps('v6', options);
 	}
 
