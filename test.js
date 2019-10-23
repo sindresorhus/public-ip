@@ -69,7 +69,7 @@ test.serial('IPv4 DNS cancellation', async t => {
 test.serial('IPv4 HTTPS cancellation', async t => {
 	const timeout = 5000;
 	const start = process.hrtime();
-	const promise = publicIp.v4({timeout, https: true});
+	const promise = publicIp.v4({timeout, onlyHttps: true});
 	promise.cancel();
 	await promise;
 	const difference = process.hrtime(start);
