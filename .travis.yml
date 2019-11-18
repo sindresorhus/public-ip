@@ -1,5 +1,4 @@
 # Has ipv6 support according to https://docs.travis-ci.com/user/reference/overview/
-sudo: required
 os: linux
 arch: arm64
 dist: trusty
