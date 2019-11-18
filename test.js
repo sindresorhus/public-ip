@@ -84,10 +84,12 @@ test('IPv4 HTTPS impossible timeout', async t => {
 	await t.throwsAsync(publicIp.v4({onlyHttps: true, timeout: 1}));
 });
 
-test('IPv6 DNS', async t => {
-	t.true(isIp.v6(await publicIp.v6()));
-});
+if (!process.env.CI) {
+	test('IPv6 DNS', async t => {
+		t.true(isIp.v6(await publicIp.v6()));
+	});
 
-test('IPv6 HTTPS', async t => {
-	t.true(isIp.v6(await publicIp.v6({onlyHttps: true})));
-});
+	test('IPv6 HTTPS', async t => {
+		t.true(isIp.v6(await publicIp.v6({onlyHttps: true})));
+	});
+}
