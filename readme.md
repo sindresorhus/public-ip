@@ -2,7 +2,7 @@
 
 > Get your public IP address - very fast!
 
-In Node.js, it queries the DNS records of OpenDNS, Google DNS and HTTPS services to determine your IP address. In browsers, it uses the excellent [icanhaz](https://github.com/major/icanhaz) service through HTTPS.
+In Node.js, it queries the DNS records of OpenDNS, Google DNS and HTTPS services to determine your IP address. In browsers, it uses the excellent [icanhaz](https://github.com/major/icanhaz) and [ipify](https://ipify.org) services through HTTPS.
 
 
 ## Install
@@ -50,7 +50,7 @@ Use a HTTPS check using the [icanhazip.com](https://github.com/major/icanhaz) se
 Type: `string[]`<br>
 Default: `[]`
 
-In case you want to add your own custom HTTPS endpoints to get public IP from (like [ifconfig.co](https://ifconfig.co), for example), you can set them here. They will only be used if everything else fails.
+In case you want to add your own custom HTTPS endpoints to get public IP from (like [ifconfig.co](https://ifconfig.co), for example), you can set them here. They will only be used if everything else fails. Any service used as fallback *must* return the IP as a plain string.
 
 Example: `{ fallbackUrls: [ 'https://ifconfig.co/ip' ] }`
 
