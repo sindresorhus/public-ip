@@ -63,7 +63,7 @@ const type = {
 			servers, question
 		})),
 		httpsUrls: [
-			'https://ipv4.icanhazip.com/',
+			'https://icanhazip.com/',
 			'https://api.ipify.org/'
 		]
 	},
@@ -72,7 +72,7 @@ const type = {
 			servers, question
 		})),
 		httpsUrls: [
-			'https://ipv6.icanhazip.com/',
+			'https://icanhazip.com/',
 			'https://api6.ipify.org/'
 		]
 	}

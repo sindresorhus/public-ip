@@ -1,13 +1,13 @@
 const sinon = require('sinon');
 
-module.exports = (objectPath, propertyName, ignoreIndex = null) => {
+module.exports = (objectPath, propertyName, ignoreIndex) => {
 	let ignoreRegExp;
 	let ignored = [];
 
 	const original = objectPath[propertyName];
 
 	function stub(...args) {
-		if (ignoreIndex !== null) {
+		if (ignoreIndex !== undefined) {
 			const ignoreArgument = args.slice(ignoreIndex, ignoreIndex + 1)[0];
 			if (ignoreRegExp && ignoreRegExp.test(ignoreArgument)) {
 				ignored.push(ignoreArgument);

@@ -1,3 +1,8 @@
+# Has ipv6 support according to https://docs.travis-ci.com/user/reference/overview/
+os: linux
+arch: arm64
+dist: bionic
+
 language: node_js
 node_js:
   - '12'

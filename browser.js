@@ -8,11 +8,11 @@ const defaults = {
 const urls = {
 	v4: [
 		'https://ipv4.icanhazip.com/',
-		'https://api.ipify.org'
+		'https://api.ipify.org/'
 	],
 	v6: [
 		'https://ipv6.icanhazip.com/',
-		'https://api6.ipify.org'
+		'https://api6.ipify.org/'
 	]
 };
 

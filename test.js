@@ -1,4 +1,4 @@
-import test from 'ava';
+import {serial as test} from 'ava';
 import isIp from 'is-ip';
 import dnsStub from './mocks/dns-socket';
 import gotStub from './mocks/got';
@@ -9,14 +9,14 @@ test.afterEach.always(() => {
 	gotStub.restore();
 });
 
-test.serial('IPv4 DNS - No HTTPS call', async t => {
+test('IPv4 DNS - No HTTPS call', async t => {
 	t.true(isIp.v4(await publicIp.v4()));
 	t.true(dnsStub.called() > 0);
 	t.is(dnsStub.ignored(), 0);
 	t.is(gotStub.called(), 0);
 });
 
-test.serial('IPv4 DNS failure falls back to HTTPS', async t => {
+test('IPv4 DNS failure falls back to HTTPS', async t => {
 	dnsStub.ignore(/.*/);
 	const ip = await publicIp.v4();
 	t.true(isIp.v4(ip));
@@ -24,7 +24,7 @@ test.serial('IPv4 DNS failure falls back to HTTPS', async t => {
 	t.true(gotStub.called() > 0);
 });
 
-test.serial('IPv4 DNS failure OpenDNS falls back to Google DNS', async t => {
+test('IPv4 DNS failure OpenDNS falls back to Google DNS', async t => {
 	dnsStub.ignore(/^208\./);
 	const ip = await publicIp.v4();
 	t.true(isIp.v4(ip));
@@ -32,12 +32,12 @@ test.serial('IPv4 DNS failure OpenDNS falls back to Google DNS', async t => {
 	t.is(gotStub.called(), 0);
 });
 
-test.serial('IPv4 HTTPS - No DNS call', async t => {
+test('IPv4 HTTPS - No DNS call', async t => {
 	t.true(isIp.v4(await publicIp.v4({onlyHttps: true})));
 	t.is(dnsStub.called(), 0);
 });
 
-test.serial('IPv4 HTTPS uses custom URLs', async t => {
+test('IPv4 HTTPS uses custom URLs', async t => {
 	gotStub.ignore(/com|org/);
 	t.true(isIp.v4(await publicIp.v4({onlyHttps: true, fallbackUrls: [
 		'https://ifconfig.co/ip',
@@ -47,15 +47,15 @@ test.serial('IPv4 HTTPS uses custom URLs', async t => {
 	t.is(dnsStub.called(), 0);
 });
 
-test.serial('IPv4 DNS timeout', async t => {
+test('IPv4 DNS timeout', async t => {
 	t.true(isIp.v4(await publicIp.v4({timeout: 2000})));
 });
 
-test.serial('IPv4 HTTPS timeout', async t => {
+test('IPv4 HTTPS timeout', async t => {
 	t.true(isIp.v4(await publicIp.v4({onlyHttps: true, timeout: 4000})));
 });
 
-test.serial('IPv4 DNS cancellation', async t => {
+test('IPv4 DNS cancellation', async t => {
 	const timeout = 5000;
 	const start = process.hrtime();
 	const promise = publicIp.v4({timeout});
@@ -66,7 +66,7 @@ test.serial('IPv4 DNS cancellation', async t => {
 	t.true(milliseconds < timeout);
 });
 
-test.serial('IPv4 HTTPS cancellation', async t => {
+test('IPv4 HTTPS cancellation', async t => {
 	const timeout = 5000;
 	const start = process.hrtime();
 	const promise = publicIp.v4({timeout, onlyHttps: true});
@@ -80,16 +80,14 @@ test.serial('IPv4 HTTPS cancellation', async t => {
 // Impossible DNS timeouts seems unreliable to test on a working connection
 // because of caches, so we're only testing HTTPS
 
-test.serial('IPv4 HTTPS impossible timeout', async t => {
+test('IPv4 HTTPS impossible timeout', async t => {
 	await t.throwsAsync(publicIp.v4({onlyHttps: true, timeout: 1}));
 });
 
-if (!process.env.CI) {
-	test.serial('IPv6 DNS', async t => {
-		t.true(isIp.v6(await publicIp.v6()));
-	});
+test('IPv6 DNS', async t => {
+	t.true(isIp.v6(await publicIp.v6()));
+});
 
-	test.serial('IPv6 HTTPS', async t => {
-		t.true(isIp.v6(await publicIp.v6({onlyHttps: true})));
-	});
-}
+test('IPv6 HTTPS', async t => {
+	t.true(isIp.v6(await publicIp.v6({onlyHttps: true})));
+});
