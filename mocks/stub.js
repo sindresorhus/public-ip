@@ -1,3 +1,4 @@
+'use strict';
 const sinon = require('sinon');
 
 module.exports = (objectPath, propertyName, ignoreIndex) => {
