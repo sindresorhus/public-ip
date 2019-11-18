@@ -1,7 +1,14 @@
 # Has ipv6 support according to https://docs.travis-ci.com/user/reference/overview/
+sudo: required
 os: linux
 arch: arm64
-dist: bionic
+dist: trusty
+before_script:
+  # Add an IPv6 config - see the corresponding Travis issue
+  # https://github.com/travis-ci/travis-ci/issues/8361
+  - if [ "${TRAVIS_OS_NAME}" == "linux" ]; then
+      sudo sh -c 'echo 0 > /proc/sys/net/ipv6/conf/all/disable_ipv6';
+    fi
 
 language: node_js
 node_js:
