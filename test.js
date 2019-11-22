@@ -78,7 +78,7 @@ test('IPv4 HTTPS cancellation', async t => {
 });
 
 // Impossible DNS timeouts seems unreliable to test on a working connection
-// because of caches, so we're only testing HTTPS
+// because of caches, so we're only testing HTTPS.
 
 test('IPv4 HTTPS impossible timeout', async t => {
 	await t.throwsAsync(publicIp.v4({onlyHttps: true, timeout: 1}));

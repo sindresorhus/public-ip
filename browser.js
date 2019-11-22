@@ -28,7 +28,8 @@ const sendXhr = async (url, options, version) => {
 			const ip = xhr.responseText.trim();
 
 			if (!ip || !isIp[version](ip)) {
-				return reject();
+				reject();
+				return;
 			}
 
 			resolve(ip);
@@ -42,8 +43,8 @@ const sendXhr = async (url, options, version) => {
 
 const queryHttps = async (version, options) => {
 	let ip;
-	const _urls = [].concat.apply(urls[version], options.fallbackUrls || []);
-	for (const url of _urls) {
+	const urls_ = [].concat.apply(urls[version], options.fallbackUrls || []);
+	for (const url of urls_) {
 		try {
 			// eslint-disable-next-line no-await-in-loop
 			ip = await sendXhr(url, options, version);
