@@ -2,7 +2,7 @@
 
 > Get your public IP address - very fast!
 
-In Node.js, it queries the DNS records of OpenDNS which has an entry with your IP address. In browsers, it uses the excellent [icanhaz](https://github.com/major/icanhaz) service through HTTPS.
+In Node.js, it queries the DNS records of OpenDNS, Google DNS and HTTPS services to determine your IP address. In browsers, it uses the excellent [icanhaz](https://github.com/major/icanhaz) and [ipify](https://ipify.org) services through HTTPS.
 
 
 ## Install
@@ -38,12 +38,21 @@ Returns a `Promise<string>` with your public IPv4 or IPv6 address. Rejects on er
 
 Type: `object`
 
-##### https
+##### onlyHttps
 
 Type: `boolean`<br>
 Default: `false`
 
-Use a HTTPS check using the [icanhazip.com](https://github.com/major/icanhaz) service instead of the DNS query. [ipify.org](https://www.ipify.org) is used as a fallback if `icanhazip.com` fails. This check is much more secure and tamper-proof, but also a lot slower. **This option is only available in the Node.js version**.
+Use a HTTPS check using the [icanhazip.com](https://github.com/major/icanhaz) service instead of the DNS query. [ipify.org](https://www.ipify.org) is used as a fallback if `icanhazip.com` fails. This check is much more secure and tamper-proof, but also a lot slower. **This option is only available in the Node.js version**. Default behaviour is to check aginst DNS before using HTTPS fallback, if set as `true` it will *only* check against HTTPS.
+
+##### fallbackUrls
+
+Type: `string[]`<br>
+Default: `[]`
+
+In case you want to add your own custom HTTPS endpoints to get public IP from (like [ifconfig.co](https://ifconfig.co), for example), you can set them here. They will only be used if everything else fails. Any service used as fallback *must* return the IP as a plain string.
+
+Example: `{ fallbackUrls: [ 'https://ifconfig.co/ip' ] }`
 
 ##### timeout
 

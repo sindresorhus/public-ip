@@ -2,32 +2,79 @@
 const {promisify} = require('util');
 const dgram = require('dgram');
 const dns = require('dns-socket');
-const got = require('got');
+const {get: got, CancelError} = require('got');
 const isIp = require('is-ip');
 
 const defaults = {
 	timeout: 5000,
-	https: false
+	onlyHttps: false
 };
 
-const type = {
-	v4: {
-		dnsServer: '208.67.222.222',
-		dnsQuestion: {
+const dnsServers = [
+	{
+		v4: {
+			servers: [
+				'208.67.222.222',
+				'208.67.220.220',
+				'208.67.222.220',
+				'208.67.220.222'
+			],
 			name: 'myip.opendns.com',
 			type: 'A'
 		},
-		httpsUrl: 'https://ipv4.icanhazip.com/',
-		httpsFallbackUrl: 'https://api.ipify.org/'
-	},
-	v6: {
-		dnsServer: '2620:0:ccc::2',
-		dnsQuestion: {
+		v6: {
+			servers: [
+				'2620:0:ccc::2',
+				'2620:0:ccd::2'
+			],
 			name: 'myip.opendns.com',
 			type: 'AAAA'
+		}
+	},
+	{
+		v4: {
+			servers: [
+				'216.239.32.10',
+				'216.239.34.10',
+				'216.239.36.10',
+				'216.239.38.10'
+			],
+			name: 'o-o.myaddr.l.google.com',
+			type: 'TXT',
+			transform: ip => ip.replace(/"/g, '')
 		},
-		httpsUrl: 'https://ipv6.icanhazip.com/',
-		httpsFallbackUrl: 'https://api6.ipify.org/'
+		v6: {
+			servers: [
+				'2001:4860:4802:32::a',
+				'2001:4860:4802:34::a',
+				'2001:4860:4802:36::a',
+				'2001:4860:4802:38::a'
+			],
+			name: 'o-o.myaddr.l.google.com',
+			type: 'TXT',
+			transform: ip => ip.replace(/"/g, '')
+		}
+	}
+];
+
+const type = {
+	v4: {
+		dnsServers: dnsServers.map(({v4: {servers, ...question}}) => ({
+			servers, question
+		})),
+		httpsUrls: [
+			'https://icanhazip.com/',
+			'https://api.ipify.org/'
+		]
+	},
+	v6: {
+		dnsServers: dnsServers.map(({v6: {servers, ...question}}) => ({
+			servers, question
+		})),
+		httpsUrls: [
+			'https://icanhazip.com/',
+			'https://api6.ipify.org/'
+		]
 	}
 };
 
@@ -42,21 +89,40 @@ const queryDns = (version, options) => {
 
 	const socketQuery = promisify(socket.query.bind(socket));
 
-	// eslint-disable-next-line promise/prefer-await-to-then
-	const promise = socketQuery({questions: [data.dnsQuestion]}, 53, data.dnsServer).then(({answers}) => {
-		socket.destroy();
+	const promise = (async () => {
+		for (const dnsServerInfo of data.dnsServers) {
+			const {servers, question} = dnsServerInfo;
+			for (const server of servers) {
+				try {
+					const {name, type, transform} = question;
 
-		const ip = ((answers[0] && answers[0].data) || '').trim();
+					// eslint-disable-next-line no-await-in-loop
+					const dnsResponse = await socketQuery({questions: [{name, type}]}, 53, server);
 
-		if (!ip || !isIp[version](ip)) {
-			throw new Error('Couldn\'t find your IP');
+					const {
+						answers: {
+							0: {
+								data
+							}
+						}
+					} = dnsResponse;
+
+					const response = (typeof data === 'string' ? data : data.toString()).trim();
+
+					const ip = transform ? transform(response) : response;
+
+					if (ip && isIp[version](ip)) {
+						socket.destroy();
+						return ip;
+					}
+				} catch (_) {}
+			}
 		}
 
-		return ip;
-	}).catch(error => { // TODO: Move both the `socket.destroy()` calls into a `Promise#finally()` handler when targeting Node.js 10.
 		socket.destroy();
-		throw error;
-	});
+
+		throw new Error('Couldn\'t find your IP');
+	})();
 
 	promise.cancel = () => {
 		socket.cancel();
@@ -76,34 +142,59 @@ const queryHttps = (version, options) => {
 				timeout: options.timeout
 			};
 
-			const gotPromise = got(type[version].httpsUrl, requestOptions);
+			const urls = [].concat.apply(type[version].httpsUrls, options.fallbackUrls || []);
 
-			cancel = gotPromise.cancel;
+			for (const url of urls) {
+				try {
+					const gotPromise = got(url, requestOptions);
+					cancel = gotPromise.cancel;
 
-			let response;
-			try {
-				response = await gotPromise;
-			} catch (_) {
-				const gotBackupPromise = got(type[version].httpsFallbackUrl, requestOptions);
+					// eslint-disable-next-line no-await-in-loop
+					const response = await gotPromise;
 
-				cancel = gotBackupPromise.cancel;
+					const ip = (response.body || '').trim();
 
-				response = await gotBackupPromise;
+					if (ip && isIp[version](ip)) {
+						return ip;
+					}
+				} catch (error) {
+					if (error instanceof CancelError) {
+						throw error;
+					}
+				}
 			}
 
-			const ip = (response.body || '').trim();
-
-			if (!ip) {
-				throw new Error('Couldn\'t find your IP');
-			}
-
-			return ip;
+			throw new Error('Couldn\'t find your IP');
 		} catch (error) {
 			// Don't throw a cancellation error for consistency with DNS
-			if (!(error instanceof got.CancelError)) {
+			if (!(error instanceof CancelError)) {
 				throw error;
 			}
 		}
+	})();
+
+	promise.cancel = function () {
+		return cancel.apply(this);
+	};
+
+	return promise;
+};
+
+const queryAll = (version, options) => {
+	let cancel;
+	const promise = (async () => {
+		let response;
+		const dnsPromise = queryDns(version, options);
+		cancel = dnsPromise.cancel;
+		try {
+			response = await dnsPromise;
+		} catch (_) {
+			const httpsPromise = queryHttps(version, options);
+			cancel = httpsPromise.cancel;
+			response = await httpsPromise;
+		}
+
+		return response;
 	})();
 
 	promise.cancel = cancel;
@@ -117,7 +208,11 @@ module.exports.v4 = options => {
 		...options
 	};
 
-	if (options.https) {
+	if (!options.onlyHttps) {
+		return queryAll('v4', options);
+	}
+
+	if (options.onlyHttps) {
 		return queryHttps('v4', options);
 	}
 
@@ -130,7 +225,11 @@ module.exports.v6 = options => {
 		...options
 	};
 
-	if (options.https) {
+	if (!options.onlyHttps) {
+		return queryAll('v6', options);
+	}
+
+	if (options.onlyHttps) {
 		return queryHttps('v6', options);
 	}
 
