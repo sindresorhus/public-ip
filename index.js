@@ -83,9 +83,11 @@ const queryDns = (version, options) => {
 
 	const socket = dns({
 		retries: 0,
+		maxQueries: 1,
 		socket: dgram.createSocket(version === 'v6' ? 'udp6' : 'udp4'),
 		timeout: options.timeout
 	});
+	socket.retries = 0;
 
 	const socketQuery = promisify(socket.query.bind(socket));
 
