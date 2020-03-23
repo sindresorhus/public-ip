@@ -95,6 +95,10 @@ const queryDns = (version, options) => {
 		for (const dnsServerInfo of data.dnsServers) {
 			const {servers, question} = dnsServerInfo;
 			for (const server of servers) {
+				if (socket.destroyed) {
+					return;
+				}
+
 				try {
 					const {name, type, transform} = question;
 
@@ -127,7 +131,7 @@ const queryDns = (version, options) => {
 	})();
 
 	promise.cancel = () => {
-		socket.cancel();
+		socket.destroy();
 	};
 
 	return promise;
