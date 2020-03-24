@@ -21,8 +21,8 @@ let xhr;
 const sendXhr = async (url, options, version) => {
 	return new Promise((resolve, reject) => {
 		xhr = new XMLHttpRequest();
-		xhr.addEventListener('error', reject, {once: true});
-		xhr.addEventListener('timeout', reject, {once: true});
+		xhr.addEventListener('error', reject, { once: true });
+		xhr.addEventListener('timeout', reject, { once: true });
 
 		xhr.addEventListener('load', () => {
 			const ip = xhr.responseText.trim();
@@ -33,7 +33,7 @@ const sendXhr = async (url, options, version) => {
 			}
 
 			resolve(ip);
-		}, {once: true});
+		}, { once: true });
 
 		xhr.open('GET', url);
 		xhr.timeout = options.timeout;
@@ -49,7 +49,7 @@ const queryHttps = async (version, options) => {
 			// eslint-disable-next-line no-await-in-loop
 			ip = await sendXhr(url, options, version);
 			return ip;
-		} catch (_) {}
+		} catch (_) { }
 	}
 
 	throw new Error('Couldn\'t find your IP');
@@ -59,6 +59,6 @@ queryHttps.cancel = () => {
 	xhr.abort();
 };
 
-module.exports.v4 = options => queryHttps('v4', {...defaults, ...options});
+module.exports.v4 = options => queryHttps('v4', Object.assign({}, defaults, options));
 
-module.exports.v6 = options => queryHttps('v6', {...defaults, ...options});
+module.exports.v6 = options => queryHttps('v6', Object.assign({}, defaults, options));

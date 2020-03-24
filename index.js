@@ -1,8 +1,8 @@
 'use strict';
-const {promisify} = require('util');
+const { promisify } = require('util');
 const dgram = require('dgram');
 const dns = require('dns-socket');
-const {get: got, CancelError} = require('got');
+const { get: got, CancelError } = require('got');
 const isIp = require('is-ip');
 
 const defaults = {
@@ -59,7 +59,7 @@ const dnsServers = [
 
 const type = {
 	v4: {
-		dnsServers: dnsServers.map(({v4: {servers, ...question}}) => ({
+		dnsServers: dnsServers.map(({ v4: { servers, ...question } }) => ({
 			servers, question
 		})),
 		httpsUrls: [
@@ -68,7 +68,7 @@ const type = {
 		]
 	},
 	v6: {
-		dnsServers: dnsServers.map(({v6: {servers, ...question}}) => ({
+		dnsServers: dnsServers.map(({ v6: { servers, ...question } }) => ({
 			servers, question
 		})),
 		httpsUrls: [
@@ -91,13 +91,13 @@ const queryDns = (version, options) => {
 
 	const promise = (async () => {
 		for (const dnsServerInfo of data.dnsServers) {
-			const {servers, question} = dnsServerInfo;
+			const { servers, question } = dnsServerInfo;
 			for (const server of servers) {
 				try {
-					const {name, type, transform} = question;
+					const { name, type, transform } = question;
 
 					// eslint-disable-next-line no-await-in-loop
-					const dnsResponse = await socketQuery({questions: [{name, type}]}, 53, server);
+					const dnsResponse = await socketQuery({ questions: [{ name, type }] }, 53, server);
 
 					const {
 						answers: {
@@ -115,7 +115,7 @@ const queryDns = (version, options) => {
 						socket.destroy();
 						return ip;
 					}
-				} catch (_) {}
+				} catch (_) { }
 			}
 		}
 
@@ -203,10 +203,7 @@ const queryAll = (version, options) => {
 };
 
 module.exports.v4 = options => {
-	options = {
-		...defaults,
-		...options
-	};
+	options = Object.assign({}, defaults, options);
 
 	if (!options.onlyHttps) {
 		return queryAll('v4', options);
@@ -220,10 +217,7 @@ module.exports.v4 = options => {
 };
 
 module.exports.v6 = options => {
-	options = {
-		...defaults,
-		...options
-	};
+	options = Object.assign({}, defaults, options);
 
 	if (!options.onlyHttps) {
 		return queryAll('v6', options);
