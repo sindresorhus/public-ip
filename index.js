@@ -83,9 +83,11 @@ const queryDns = (version, options) => {
 
 	const socket = dns({
 		retries: 0,
+		maxQueries: 1,
 		socket: dgram.createSocket(version === 'v6' ? 'udp6' : 'udp4'),
 		timeout: options.timeout
 	});
+	socket.retries = 0; // Temp fix, pull request: https://github.com/mafintosh/dns-socket/pull/22
 
 	const socketQuery = promisify(socket.query.bind(socket));
 
@@ -93,6 +95,10 @@ const queryDns = (version, options) => {
 		for (const dnsServerInfo of data.dnsServers) {
 			const {servers, question} = dnsServerInfo;
 			for (const server of servers) {
+				if (socket.destroyed) {
+					return;
+				}
+
 				try {
 					const {name, type, transform} = question;
 
@@ -125,7 +131,7 @@ const queryDns = (version, options) => {
 	})();
 
 	promise.cancel = () => {
-		socket.cancel();
+		socket.destroy();
 	};
 
 	return promise;
