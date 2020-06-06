@@ -13,7 +13,12 @@ const urls = {
 	v6: [
 		'https://ipv6.icanhazip.com/',
 		'https://api6.ipify.org/'
-	]
+	],
+	// URL => regex which match IP in response
+	v6or4: {
+		'https://www.cloudflare.com/cdn-cgi/trace': 'ip(=)(.*?)\n',
+		'https://ip-api.io/api/json': 'ip"(.*?)"(.*?)"'
+	}
 };
 
 let xhr;
@@ -27,7 +32,7 @@ const sendXhr = async (url, options, version) => {
 		xhr.addEventListener('load', () => {
 			const ip = xhr.responseText.trim();
 
-			if (!ip || !isIp[version](ip)) {
+			if (!ip || (version && !isIp[version](ip))) {
 				reject();
 				return;
 			}
@@ -59,6 +64,27 @@ queryHttps.cancel = () => {
 	xhr.abort();
 };
 
+const v6or4 = async options => {
+	let ip;
+	const fallbackUrls = options.fallbackUrls || {};
+	const urls_ = {...urls.v6or4, ...fallbackUrls};
+
+	for (const url of Object.keys(urls_)) {
+		try {
+			// eslint-disable-next-line no-await-in-loop
+			ip = await sendXhr(url, options);
+			ip = ip.match(urls_[url])[2]
+			if (ip && (isIp.v4(ip) || isIp.v6(ip))) {
+				return ip;
+			}
+		} catch (_) {}
+	}
+
+	throw new Error('Couldn\'t find your IP');
+};
+
 module.exports.v4 = options => queryHttps('v4', {...defaults, ...options});
 
 module.exports.v6 = options => queryHttps('v6', {...defaults, ...options});
+
+module.exports.v6or4 = options => v6or4({...defaults, ...options});

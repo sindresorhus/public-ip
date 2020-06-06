@@ -10,4 +10,5 @@ const publicIp = require('./browser');
 			'https://ifconfig.me'
 		]
 	}));
+	console.log('IP:', await publicIp.v6or4());
 })();
