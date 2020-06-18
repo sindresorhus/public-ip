@@ -47,9 +47,9 @@ const sendXhr = async (url, options, version) => {
 };
 
 const queryHttps = async (version, options) => {
-	let ip;
 	const urls_ = [].concat.apply(urls[version], options.fallbackUrls || []);
 	for (const url of urls_) {
+		let ip;
 		try {
 			// eslint-disable-next-line no-await-in-loop
 			ip = await sendXhr(url, options, version);
