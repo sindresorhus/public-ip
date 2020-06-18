@@ -65,15 +65,14 @@ queryHttps.cancel = () => {
 };
 
 const v6or4 = async options => {
-	let ip;
 	const fallbackUrls = options.fallbackUrls || {};
 	const urls_ = {...urls.v6or4, ...fallbackUrls};
 
 	for (const url of Object.keys(urls_)) {
 		try {
 			// eslint-disable-next-line no-await-in-loop
-			ip = await sendXhr(url, options);
-			ip = ip.match(urls_[url])[2]
+			let ip = await sendXhr(url, options);
+			ip = ip.match(urls_[url])[2];
 			if (ip && (isIp.v4(ip) || isIp.v6(ip))) {
 				return ip;
 			}

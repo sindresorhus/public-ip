@@ -2,13 +2,22 @@
 // $ browserify test-browser.js | pbcopy
 'use strict';
 const publicIp = require('./browser');
+const test = require('tape');
 
-(async () => {
-	console.log('IP:', await publicIp.v4());
-	console.log('IP:', await publicIp.v4({
+test('ipv4', async t => {
+	const ip1 = await publicIp.v4();
+	const ip2 = await publicIp.v4({
 		fallbackUrls: [
 			'https://ifconfig.me'
 		]
-	}));
-	console.log('IP:', await publicIp.v6or4());
-})();
+	});
+	t.equal(ip1, ip2);
+	t.end();
+});
+
+test('ipv6', async t => {
+	const ip1 = await publicIp.v6();
+	const ip2 = await publicIp.v6();
+	t.equal(ip1, ip2);
+	t.end();
+});

@@ -14,7 +14,9 @@
 		"node": ">=8"
 	},
 	"scripts": {
-		"test": "xo && ava test.js && tsd"
+		"test-browser": "airtap --local test-browser.js",
+		"test-node": "xo && ava test.js && tsd",
+		"test": "npm run test-node && npm run test-browser"
 	},
 	"files": [
 		"index.js",
@@ -40,8 +42,10 @@
 		"is-ip": "^3.1.0"
 	},
 	"devDependencies": {
+		"airtap": "^3.0.0",
 		"ava": "^2.2.0",
 		"sinon": "^7.4.1",
+		"tape": "^5.0.1",
 		"tsd": "^0.11.0",
 		"xo": "^0.25.3"
 	},
