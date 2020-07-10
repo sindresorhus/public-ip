@@ -1,6 +1,6 @@
 {
 	"name": "public-ip",
-	"version": "4.0.1",
+	"version": "4.0.2",
 	"description": "Get your public IP address - very fast!",
 	"license": "MIT",
 	"repository": "sindresorhus/public-ip",
