@@ -57,6 +57,16 @@ const dnsServers = [
 	}
 ];
 
+// URL => regex which match IP in response
+const regexUrls = {
+	// These URLs accept both IPv6/IPv4 connectivity
+	// Response might change for dual IPv6/IPv4 stack network interface
+	general: {
+		'https://www.cloudflare.com/cdn-cgi/trace': 'ip(=)(.*?)\n',
+		'https://ip-api.io/api/json': 'ip"(.*?)"(.*?)"'
+	}
+};
+
 const type = {
 	v4: {
 		dnsServers: dnsServers.map(({v4: {servers, ...question}}) => ({
@@ -162,6 +172,28 @@ const queryHttps = (version, options) => {
 
 					if (ip && isIp[version](ip)) {
 						return ip;
+					}
+				} catch (error) {
+					if (error instanceof CancelError) {
+						throw error;
+					}
+				}
+			}
+
+			// Try regex URLs
+			const urls_ = regexUrls;
+			for (const url of Object.keys(urls_)) {
+				try {
+					const gotPromise = got(url, requestOptions);
+					cancel = gotPromise.cancel;
+
+					// eslint-disable-next-line no-await-in-loop
+					const response = await gotPromise;
+
+					const ip = (response.body || '').trim().match(urls_[url]);
+
+					if (ip[2] && isIp[version](ip[2])) {
+						return ip[2];
 					}
 				} catch (error) {
 					if (error instanceof CancelError) {
