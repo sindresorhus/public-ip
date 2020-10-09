@@ -7,42 +7,28 @@ const test = require('tape');
 let v6Address = null;
 
 test('v6', async t => {
-	publicIp.v6().then(async ip1 => {
+	try {
+		const ip1 = await publicIp.v6();
 		v6Address = await publicIp.v6();
 
 		t.equal(ip1, v6Address);
 		t.end();
-	}).catch(error => {
+	} catch (error) {
 		if (error === 'Couldn\'t find your IP') {
 			v6Address = null;
 		}
 
 		t.end();
-	});
+	}
 });
 
 test('v4', async t => {
-	publicIp.v4().then(async ip1 => {
-		const ip2 = await publicIp.v4({
-			fallbackUrls: [
-				'https://ifconfig.me'
-			]
-		});
-		t.equal(ip1, ip2);
-		t.end();
+	const ip1 = await publicIp.v4();
+	const ip2 = await publicIp.v4({
+		fallbackUrls: [
+			'https://ifconfig.me'
+		]
 	});
-});
-
-test('v6or4', async t => {
-	publicIp.v6or4().then(async ip1 => {
-		const ip2 = await publicIp.v4();
-
-		if (!v6Address) {
-			t.equal(ip1, ip2);
-		} else {
-			t.equal(ip1, v6Address);
-		}
-
-		t.end();
-	});
+	t.equal(ip1, ip2);
+	t.end();
 });
