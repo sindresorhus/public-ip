@@ -4,7 +4,7 @@
 const publicIp = require('./browser');
 const test = require('tape');
 
-let v6Address = false;
+let v6Address = null;
 
 test('v6', async t => {
 	publicIp.v6().then(async ip1 => {
@@ -14,7 +14,7 @@ test('v6', async t => {
 		t.end();
 	}).catch(error => {
 		if (error === 'Couldn\'t find your IP') {
-			v6Address = false;
+			v6Address = null;
 		}
 
 		t.end();
@@ -37,7 +37,7 @@ test('v6or4', async t => {
 	publicIp.v6or4().then(async ip1 => {
 		const ip2 = await publicIp.v4();
 
-		if (v6Address === false) {
+		if (!v6Address) {
 			t.equal(ip1, ip2);
 		} else {
 			t.equal(ip1, v6Address);
