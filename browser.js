@@ -1,5 +1,6 @@
 'use strict';
 const isIp = require('is-ip');
+const regexUrls = require('./api-urls-regex');
 
 const defaults = {
 	timeout: 5000
@@ -13,14 +14,7 @@ const urls = {
 	v6: [
 		'https://ipv6.icanhazip.com/',
 		'https://api6.ipify.org/'
-	],
-	// These URLs accept both IPv6/IPv4 connectivity
-	// Response might change for dual IPv6/IPv4 stack network interface
-	// URL => regex which match IP in response
-	general: {
-		'https://www.cloudflare.com/cdn-cgi/trace': 'ip(=)(.*?)\n',
-		'https://ip-api.io/api/json': 'ip"(.*?)"(.*?)"'
-	}
+	]
 };
 
 let xhr;
@@ -49,13 +43,11 @@ const sendXhr = async (url, options, version) => {
 };
 
 const queryGeneral = async options => {
-	const urls_ = urls.general;
-
-	for (const url of Object.keys(urls_)) {
+	for (const [url, pattern] of Object.entries(regexUrls)) {
 		try {
 			// eslint-disable-next-line no-await-in-loop
-			let ip = await sendXhr(url, options);
-			ip = ip.match(urls_[url])[2];
+			const response = await sendXhr(url, options);
+			const {groups: {ip}} = pattern.exec(response);
 			if (ip && (isIp.v4(ip) || isIp.v6(ip))) {
 				return ip;
 			}

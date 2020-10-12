@@ -5,6 +5,8 @@ const dns = require('dns-socket');
 const {get: got, CancelError} = require('got');
 const isIp = require('is-ip');
 
+const regexUrls = require('./api-urls-regex');
+
 const defaults = {
 	timeout: 5000,
 	onlyHttps: false
@@ -56,16 +58,6 @@ const dnsServers = [
 		}
 	}
 ];
-
-// URL => regex which match IP in response
-const regexUrls = {
-	// These URLs accept both IPv6/IPv4 connectivity
-	// Response might change for dual IPv6/IPv4 stack network interface
-	general: {
-		'https://www.cloudflare.com/cdn-cgi/trace': 'ip(=)(.*?)\n',
-		'https://ip-api.io/api/json': 'ip"(.*?)"(.*?)"'
-	}
-};
 
 const type = {
 	v4: {
@@ -160,7 +152,16 @@ const queryHttps = (version, options) => {
 
 			const urls = [].concat.apply(type[version].httpsUrls, options.fallbackUrls || []);
 
-			for (const url of urls) {
+			// Make object with url as key and pattern as value
+			const urls_ = {
+				...urls.reduce((result, item) => {
+					result[item] = null;
+					return result;
+				}, {}),
+				...regexUrls
+			};
+
+			for (const [url, pattern] of Object.entries(urls_)) {
 				try {
 					const gotPromise = got(url, requestOptions);
 					cancel = gotPromise.cancel;
@@ -168,32 +169,14 @@ const queryHttps = (version, options) => {
 					// eslint-disable-next-line no-await-in-loop
 					const response = await gotPromise;
 
-					const ip = (response.body || '').trim();
+					let ip = (response.body || '').trim();
+
+					if (pattern) {
+						ip = pattern.exec(ip).groups.ip;
+					}
 
 					if (ip && isIp[version](ip)) {
 						return ip;
-					}
-				} catch (error) {
-					if (error instanceof CancelError) {
-						throw error;
-					}
-				}
-			}
-
-			// Try regex URLs
-			const urls_ = regexUrls;
-			for (const url of Object.keys(urls_)) {
-				try {
-					const gotPromise = got(url, requestOptions);
-					cancel = gotPromise.cancel;
-
-					// eslint-disable-next-line no-await-in-loop
-					const response = await gotPromise;
-
-					const ip = (response.body || '').trim().match(urls_[url]);
-
-					if (ip[2] && isIp[version](ip[2])) {
-						return ip[2];
 					}
 				} catch (error) {
 					if (error instanceof CancelError) {
