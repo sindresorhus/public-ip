@@ -40,7 +40,7 @@ Type: `object`
 Type: `boolean`\
 Default: `false`
 
-Use a HTTPS check using the [icanhazip.com](https://github.com/major/icanhaz) service instead of the DNS query. [ipify.org](https://www.ipify.org) is used as a fallback if `icanhazip.com` fails. This check is much more secure and tamper-proof, but also a lot slower. **This option is only available in the Node.js version**. The default behaviour is to check aginst DNS before using HTTPS fallback. If set to `true`, it will *only* check against HTTPS.
+Use a HTTPS check using the [icanhazip.com](https://github.com/major/icanhaz) service instead of the DNS query. [ipify.org](https://www.ipify.org) is used as a fallback if `icanhazip.com` fails. This check is much more secure and tamper-proof, but also a lot slower. **This option is only available in the Node.js version**. The default behaviour is to check against DNS before using HTTPS fallback. If set to `true`, it will *only* check against HTTPS.
 
 ##### fallbackUrls
 
