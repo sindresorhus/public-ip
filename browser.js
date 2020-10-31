@@ -40,8 +40,8 @@ const sendXhr = (url, options, version) => {
 		xhr.send();
 	});
 	promise.cancel = () => {
-		_resolve();
 		xhr.abort();
+		_resolve();
 	};
 
 	return promise;
