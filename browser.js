@@ -16,11 +16,9 @@ const urls = {
 	]
 };
 
-let xhr;
-
 const sendXhr = async (url, options, version) => {
 	return new Promise((resolve, reject) => {
-		xhr = new XMLHttpRequest();
+		const xhr = new XMLHttpRequest();
 		xhr.addEventListener('error', reject, {once: true});
 		xhr.addEventListener('timeout', reject, {once: true});
 
@@ -53,10 +51,6 @@ const queryHttps = async (version, options) => {
 	}
 
 	throw new Error('Couldn\'t find your IP');
-};
-
-queryHttps.cancel = () => {
-	xhr.abort();
 };
 
 module.exports.v4 = options => queryHttps('v4', {...defaults, ...options});
