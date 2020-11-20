@@ -18,6 +18,7 @@ const urls = {
 
 const sendXhr = (url, options, version) => {
 	const xhr = new XMLHttpRequest();
+
 	let _resolve;
 	const promise = new Promise((resolve, reject) => {
 		_resolve = resolve;
@@ -39,6 +40,7 @@ const sendXhr = (url, options, version) => {
 		xhr.timeout = options.timeout;
 		xhr.send();
 	});
+
 	promise.cancel = () => {
 		xhr.abort();
 		_resolve();
@@ -62,6 +64,7 @@ const queryHttps = (version, options) => {
 
 		throw new Error('Couldn\'t find your IP');
 	})();
+
 	promise.cancel = () => {
 		request.cancel();
 	};
