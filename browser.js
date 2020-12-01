@@ -19,9 +19,9 @@ const urls = {
 const sendXhr = (url, options, version) => {
 	const xhr = new XMLHttpRequest();
 
-	let _resolve;
+	let _reject;
 	const promise = new Promise((resolve, reject) => {
-		_resolve = resolve;
+		_reject = reject;
 		xhr.addEventListener('error', reject, {once: true});
 		xhr.addEventListener('timeout', reject, {once: true});
 
@@ -43,7 +43,7 @@ const sendXhr = (url, options, version) => {
 
 	promise.cancel = () => {
 		xhr.abort();
-		_resolve();
+		_reject(new CancelError());
 	};
 
 	return promise;
@@ -59,7 +59,11 @@ const queryHttps = (version, options) => {
 				// eslint-disable-next-line no-await-in-loop
 				const ip = await request;
 				return ip;
-			} catch (_) {}
+			} catch (e) {
+				if(e instanceof CancelError) {
+					throw e;
+				}
+			}
 		}
 
 		throw new Error('Couldn\'t find your IP');
@@ -71,6 +75,17 @@ const queryHttps = (version, options) => {
 
 	return promise;
 };
+
+class CancelError extends Error {
+	constructor() {
+		super("Request was cancelled");
+		this.name = "CancelError";
+	}
+
+	get isCanceled() {
+		return true;
+	}
+}
 
 module.exports.v4 = options => queryHttps('v4', {...defaults, ...options});
 
