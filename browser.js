@@ -59,9 +59,9 @@ const queryHttps = (version, options) => {
 				// eslint-disable-next-line no-await-in-loop
 				const ip = await request;
 				return ip;
-			} catch (e) {
-				if(e instanceof CancelError) {
-					throw e;
+			} catch (error) {
+				if (error instanceof CancelError) {
+					throw error;
 				}
 			}
 		}
@@ -78,8 +78,8 @@ const queryHttps = (version, options) => {
 
 class CancelError extends Error {
 	constructor() {
-		super("Request was cancelled");
-		this.name = "CancelError";
+		super('Request was cancelled');
+		this.name = 'CancelError';
 	}
 
 	get isCanceled() {
