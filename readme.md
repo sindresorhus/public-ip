@@ -1,4 +1,4 @@
-# public-ip [![Build Status](https://travis-ci.org/sindresorhus/public-ip.svg?branch=master)](https://travis-ci.org/sindresorhus/public-ip)
+# public-ip
 
 > Get your public IP address - very fast!
 
