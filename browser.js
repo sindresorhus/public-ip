@@ -1,6 +1,17 @@
 'use strict';
 const isIp = require('is-ip');
 
+class CancelError extends Error {
+	constructor() {
+		super('Request was cancelled');
+		this.name = 'CancelError';
+	}
+
+	get isCanceled() {
+		return true;
+	}
+}
+
 const defaults = {
 	timeout: 5000
 };
@@ -75,17 +86,6 @@ const queryHttps = (version, options) => {
 
 	return promise;
 };
-
-class CancelError extends Error {
-	constructor() {
-		super('Request was cancelled');
-		this.name = 'CancelError';
-	}
-
-	get isCanceled() {
-		return true;
-	}
-}
 
 module.exports.v4 = options => queryHttps('v4', {...defaults, ...options});
 
