@@ -1,6 +1,17 @@
 'use strict';
 const isIp = require('is-ip');
 
+class CancelError extends Error {
+	constructor() {
+		super('Request was cancelled');
+		this.name = 'CancelError';
+	}
+
+	get isCanceled() {
+		return true;
+	}
+}
+
 const defaults = {
 	timeout: 5000
 };
@@ -16,11 +27,12 @@ const urls = {
 	]
 };
 
-let xhr;
+const sendXhr = (url, options, version) => {
+	const xhr = new XMLHttpRequest();
 
-const sendXhr = async (url, options, version) => {
-	return new Promise((resolve, reject) => {
-		xhr = new XMLHttpRequest();
+	let _reject;
+	const promise = new Promise((resolve, reject) => {
+		_reject = reject;
 		xhr.addEventListener('error', reject, {once: true});
 		xhr.addEventListener('timeout', reject, {once: true});
 
@@ -39,24 +51,40 @@ const sendXhr = async (url, options, version) => {
 		xhr.timeout = options.timeout;
 		xhr.send();
 	});
+
+	promise.cancel = () => {
+		xhr.abort();
+		_reject(new CancelError());
+	};
+
+	return promise;
 };
 
-const queryHttps = async (version, options) => {
-	let ip;
-	const urls_ = [].concat.apply(urls[version], options.fallbackUrls || []);
-	for (const url of urls_) {
-		try {
-			// eslint-disable-next-line no-await-in-loop
-			ip = await sendXhr(url, options, version);
-			return ip;
-		} catch (_) {}
-	}
+const queryHttps = (version, options) => {
+	let request;
+	const promise = (async function () {
+		const urls_ = [].concat.apply(urls[version], options.fallbackUrls || []);
+		for (const url of urls_) {
+			try {
+				request = sendXhr(url, options, version);
+				// eslint-disable-next-line no-await-in-loop
+				const ip = await request;
+				return ip;
+			} catch (error) {
+				if (error instanceof CancelError) {
+					throw error;
+				}
+			}
+		}
 
-	throw new Error('Couldn\'t find your IP');
-};
+		throw new Error('Couldn\'t find your IP');
+	})();
 
-queryHttps.cancel = () => {
-	xhr.abort();
+	promise.cancel = () => {
+		request.cancel();
+	};
+
+	return promise;
 };
 
 module.exports.v4 = options => queryHttps('v4', {...defaults, ...options});
