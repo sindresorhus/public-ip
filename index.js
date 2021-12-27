@@ -230,11 +230,30 @@ const queryAll = (version, options) => {
 
 const publicIp = options => {
 
-	try {
-	publicIp.v6(options);
-	} catch {
-		publicIp.v4(options)
-	}
+	let timeout = options.timeout || 2000;
+	let returnIp = "";
+	
+	let promise = new Promise()
+	
+	let v6 = publicIp.v6(options)
+		
+		v6.then(
+			(ip) => {
+				returnIp = ip;
+			},
+			(err) => {
+
+			}
+		)
+
+	setTimeout( () => { 
+		if (returnIp === ""){
+			returnIp = await this.v4(options)
+			v6.cancel()
+		}
+	}, timeout)		
+	
+
 };
 
 publicIp.v4 = options => {
