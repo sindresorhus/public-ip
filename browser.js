@@ -1,7 +1,6 @@
-'use strict';
-const isIp = require('is-ip');
+import isIp from 'is-ip';
 
-class CancelError extends Error {
+export class CancelError extends Error {
 	constructor() {
 		super('Request was cancelled');
 		this.name = 'CancelError';
@@ -13,18 +12,18 @@ class CancelError extends Error {
 }
 
 const defaults = {
-	timeout: 5000
+	timeout: 5000,
 };
 
 const urls = {
 	v4: [
 		'https://ipv4.icanhazip.com/',
-		'https://api.ipify.org/'
+		'https://api.ipify.org/',
 	],
 	v6: [
 		'https://ipv6.icanhazip.com/',
-		'https://api6.ipify.org/'
-	]
+		'https://api6.ipify.org/',
+	],
 };
 
 const sendXhr = (url, options, version) => {
@@ -63,7 +62,12 @@ const sendXhr = (url, options, version) => {
 const queryHttps = (version, options) => {
 	let request;
 	const promise = (async function () {
-		const urls_ = [].concat.apply(urls[version], options.fallbackUrls || []);
+		const urls_ = [
+			...urls[version],
+			...(options.fallbackUrls ?? []),
+		];
+
+		let lastError;
 		for (const url of urls_) {
 			try {
 				request = sendXhr(url, options, version);
@@ -71,13 +75,15 @@ const queryHttps = (version, options) => {
 				const ip = await request;
 				return ip;
 			} catch (error) {
+				lastError = error;
+
 				if (error instanceof CancelError) {
 					throw error;
 				}
 			}
 		}
 
-		throw new Error('Couldn\'t find your IP');
+		throw new Error('Could not find your IP address', {cause: lastError});
 	})();
 
 	promise.cancel = () => {
@@ -87,6 +93,10 @@ const queryHttps = (version, options) => {
 	return promise;
 };
 
-module.exports.v4 = options => queryHttps('v4', {...defaults, ...options});
+const publicIp = {};
 
-module.exports.v6 = options => queryHttps('v6', {...defaults, ...options});
+publicIp.v4 = options => queryHttps('v4', {...defaults, ...options});
+
+publicIp.v6 = options => queryHttps('v6', {...defaults, ...options});
+
+export default publicIp;

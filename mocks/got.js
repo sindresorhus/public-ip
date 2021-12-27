@@ -1,4 +1,6 @@
-'use strict';
-const stub = require('./stub');
+import got_ from 'got';
+import stub from './stub.js';
 
-module.exports = stub(require('got'), 'get', 0);
+const got = stub(got_, 'get', 0);
+
+export default got;

@@ -1,8 +1,9 @@
-import {serial as test} from 'ava';
+import process from 'node:process';
+import test from 'ava';
 import isIp from 'is-ip';
-import dnsStub from './mocks/dns-socket';
-import gotStub from './mocks/got';
-import publicIp from '.';
+import dnsStub from './mocks/dns-socket.js';
+import gotStub from './mocks/got.js';
+import publicIp from './index.js';
 
 test.afterEach.always(() => {
 	dnsStub.restore();
@@ -41,7 +42,7 @@ test('IPv4 HTTPS uses custom URLs', async t => {
 	gotStub.ignore(/com|org/);
 	t.true(isIp.v4(await publicIp.v4({onlyHttps: true, fallbackUrls: [
 		'https://ifconfig.co/ip',
-		'https://ifconfig.io/ip'
+		'https://ifconfig.io/ip',
 	]})));
 	t.is(gotStub.ignored(), 2);
 	t.is(dnsStub.called(), 0);

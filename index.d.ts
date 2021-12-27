@@ -1,44 +1,44 @@
-declare namespace publicIp {
-	interface Options {
-		/**
-		Use a HTTPS check using the [icanhazip.com](https://github.com/major/icanhaz) service instead of the DNS query. [ipify.org](https://www.ipify.org) is used as a fallback if `icanhazip.com` fails. This check is much more secure and tamper-proof, but also a lot slower. __This option is only available in the Node.js version__. The default behaviour is to check against DNS before using HTTPS fallback. If set to `true`, it will _only_ check against HTTPS.
+export interface Options {
+	/**
+	Use a HTTPS check using the [icanhazip.com](https://github.com/major/icanhaz) service instead of the DNS query. [ipify.org](https://www.ipify.org) is used as a fallback if `icanhazip.com` fails. This check is much more secure and tamper-proof, but also a lot slower.
 
-		@default false
-		*/
-		readonly onlyHttps?: boolean;
+	__This option is only available in the Node.js version__.
 
-		/**
-		The time in milliseconds until a request is considered timed out.
+	The default behaviour is to check against DNS before using HTTPS fallback. If set to `true`, it will _only_ check against HTTPS.
 
-		@default 5000
-		*/
-		readonly timeout?: number;
+	@default false
+	*/
+	readonly onlyHttps?: boolean;
 
-		/**
-		Add your own custom HTTPS endpoints to get the public IP from. They will only be used if everything else fails. Any service used as fallback _must_ return the IP as a plain string.
+	/**
+	The time in milliseconds until a request is considered timed out.
 
-		@default []
+	@default 5000
+	*/
+	readonly timeout?: number;
 
-		@example
-		```
-		import publicIp = require('public-ip');
+	/**
+	Add your own custom HTTPS endpoints to get the public IP from. They will only be used if everything else fails. Any service used as fallback _must_ return the IP as a plain string.
 
-		(async () => {
-			await publicIp.v6({
-				fallbackUrls: [
-					'https://ifconfig.co/ip'
-				]
-			});
-		})();
-		```
-		*/
-		readonly fallbackUrls?: readonly string[];
-	}
+	@default []
 
-	type CancelablePromise<T> = Promise<T> & {
-		cancel(): void;
-	};
+	@example
+	```
+	import publicIp from 'public-ip';
+
+	await publicIp.v6({
+		fallbackUrls: [
+			'https://ifconfig.co/ip'
+		]
+	});
+	```
+	*/
+	readonly fallbackUrls?: readonly string[];
 }
+
+export type CancelablePromise<T> = Promise<T> & {
+	cancel(): void;
+};
 
 declare const publicIp: {
 	/**
@@ -51,15 +51,13 @@ declare const publicIp: {
 
 	@example
 	```
-	import publicIp = require('public-ip');
+	import publicIp from 'public-ip';
 
-	(async () => {
-		console.log(await publicIp.v4());
-		//=> '46.5.21.123'
-	})();
+	console.log(await publicIp.v4());
+	//=> '46.5.21.123'
 	```
 	*/
-	v4(options?: publicIp.Options): publicIp.CancelablePromise<string>;
+	v4(options?: Options): CancelablePromise<string>;
 
 	/**
 	Get your public IP address - very fast!
@@ -71,15 +69,15 @@ declare const publicIp: {
 
 	@example
 	```
-	import publicIp = require('public-ip');
+	import publicIp from 'public-ip';
 
-	(async () => {
-		console.log(await publicIp.v6());
-		//=> 'fe80::200:f8ff:fe21:67cf'
-	})();
+	console.log(await publicIp.v6());
+	//=> 'fe80::200:f8ff:fe21:67cf'
 	```
 	*/
-	v6(options?: publicIp.Options): publicIp.CancelablePromise<string>;
+	v6(options?: Options): CancelablePromise<string>;
 };
 
-export = publicIp;
+export default publicIp;
+
+export {CancelError} from 'got';

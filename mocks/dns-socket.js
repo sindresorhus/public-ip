@@ -1,4 +1,6 @@
-'use strict';
-const stub = require('./stub');
+import dnsSocket_ from 'dns-socket';
+import stub from './stub.js';
 
-module.exports = stub(require('dns-socket').prototype, 'query', -2);
+const dnsSocket = stub(dnsSocket_.prototype, 'query', -2);
+
+export default dnsSocket;

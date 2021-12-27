@@ -6,22 +6,20 @@ In Node.js, it queries the DNS records of OpenDNS, Google DNS, and HTTPS service
 
 ## Install
 
-```
-$ npm install public-ip
+```sh
+npm install public-ip
 ```
 
 ## Usage
 
 ```js
-const publicIp = require('public-ip');
+import publicIp from 'public-ip';
 
-(async () => {
-	console.log(await publicIp.v4());
-	//=> '46.5.21.123'
+console.log(await publicIp.v4());
+//=> '46.5.21.123'
 
-	console.log(await publicIp.v6());
-	//=> 'fe80::200:f8ff:fe21:67cf'
-})();
+console.log(await publicIp.v6());
+//=> 'fe80::200:f8ff:fe21:67cf'
 ```
 
 ## API
@@ -50,15 +48,13 @@ Default: `[]`
 Add your own custom HTTPS endpoints to get the public IP from. They will only be used if everything else fails. Any service used as fallback *must* return the IP as a plain string.
 
 ```js
-const publicIp = require('public-ip');
+import publicIp from 'public-ip';
 
-(async () => {
-	await publicIp.v6({
-		fallbackUrls: [
-			'https://ifconfig.co/ip'
-		]
-	});
-})();
+await publicIp.v6({
+	fallbackUrls: [
+		'https://ifconfig.co/ip'
+	]
+});
 ```
 
 ##### timeout

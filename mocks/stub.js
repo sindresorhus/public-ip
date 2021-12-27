@@ -1,7 +1,6 @@
-'use strict';
-const sinon = require('sinon');
+import sinon from 'sinon';
 
-module.exports = (objectPath, propertyName, ignoreIndex) => {
+export default function stub(objectPath, propertyName, ignoreIndex) {
 	let ignoreRegExp;
 	let ignored = [];
 
@@ -31,6 +30,6 @@ module.exports = (objectPath, propertyName, ignoreIndex) => {
 			ignoreRegExp = undefined;
 			ignored = [];
 			objectPath[propertyName].resetHistory();
-		}
+		},
 	};
-};
+}
