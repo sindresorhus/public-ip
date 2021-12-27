@@ -229,7 +229,20 @@ const queryAll = (version, options) => {
 };
 
 const publicIp = options => {
-	
+	options = {
+		...defaults,
+		...options,
+	};
+
+	if (!options.onlyHttps) {
+		return queryAll('any', options);
+	}
+
+	if (options.onlyHttps) {
+		return queryHttps('any', options);
+	}
+
+	return queryDns('any', options);
 };
 
 publicIp.v4 = options => {
