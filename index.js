@@ -231,28 +231,30 @@ const queryAll = (version, options) => {
 const publicIp = options => {
 
 	let timeout = options.timeout || 2000;
-	let returnIp = "";
-	
+	let returnIp = "";	
 	let promise = new Promise()
-	
 	let v6 = publicIp.v6(options)
+	
+	setTimeout( () => { 
 		
-		v6.then(
+		if (returnIp === ""){
+			//check if promise is still pending or was rejected (for any reason)
+			v6.cancel()
+			returnIp = await this.v4(options)
+			promise.resolve(returnIp)
+		}
+	}, timeout)		
+			
+	v6.then(
 			(ip) => {
 				returnIp = ip;
 			},
 			(err) => {
-
+				promise.reject(err)
 			}
 		)
 
-	setTimeout( () => { 
-		if (returnIp === ""){
-			returnIp = await this.v4(options)
-			v6.cancel()
-		}
-	}, timeout)		
-	
+	return promise;
 
 };
 
