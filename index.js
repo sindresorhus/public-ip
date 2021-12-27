@@ -228,7 +228,9 @@ const queryAll = (version, options) => {
 	return promise;
 };
 
-const publicIp = {};
+const publicIp = options => {
+	
+};
 
 publicIp.v4 = options => {
 	options = {
