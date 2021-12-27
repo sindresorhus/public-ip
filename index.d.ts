@@ -1,3 +1,8 @@
+/**
+Thrown when the public IP address could not be found.
+*/
+export class IpNotFoundError extends Error {}
+
 export interface Options {
 	/**
 	Use a HTTPS check using the [icanhazip.com](https://github.com/major/icanhaz) service instead of the DNS query. [ipify.org](https://www.ipify.org) is used as a fallback if `icanhazip.com` fails. This check is much more secure and tamper-proof, but also a lot slower.

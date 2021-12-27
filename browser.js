@@ -11,6 +11,13 @@ export class CancelError extends Error {
 	}
 }
 
+export class IpNotFoundError extends Error {
+	constructor(options) {
+		super('Could not get the public IP address', options);
+		this.name = 'IpNotFoundError';
+	}
+}
+
 const defaults = {
 	timeout: 5000,
 };
@@ -83,7 +90,7 @@ const queryHttps = (version, options) => {
 			}
 		}
 
-		throw new Error('Could not find your IP address', {cause: lastError});
+		throw new IpNotFoundError({cause: lastError});
 	})();
 
 	promise.cancel = () => {

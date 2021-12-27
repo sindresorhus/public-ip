@@ -64,6 +64,14 @@ Default: `5000`
 
 The time in milliseconds until a request is considered timed out.
 
+### IpNotFoundError
+
+Error thrown when the public IP address could not be found.
+
+### CancelError
+
+Error thrown when the operation was canceled.
+
 ## Maintainers
 
 - [Sindre Sorhus](https://github.com/sindresorhus)

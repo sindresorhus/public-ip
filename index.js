@@ -4,6 +4,13 @@ import dns from 'dns-socket';
 import got, {CancelError} from 'got';
 import isIp from 'is-ip';
 
+export class IpNotFoundError extends Error {
+	constructor(options) {
+		super('Could not get the public IP address', options);
+		this.name = 'IpNotFoundError';
+	}
+}
+
 const defaults = {
 	timeout: 5000,
 	onlyHttps: false,
@@ -129,7 +136,7 @@ const queryDns = (version, options) => {
 
 		socket.destroy();
 
-		throw new Error('Could not find your IP address', {cause: lastError});
+		throw new IpNotFoundError({cause: lastError});
 	})();
 
 	promise.cancel = () => {
@@ -183,8 +190,7 @@ const queryHttps = (version, options) => {
 				}
 			}
 
-			const errorDescription = lastError ? `: ${lastError.message}` : '';
-			throw new Error(`Could not find your IP address${errorDescription}`, {cause: lastError});
+			throw new IpNotFoundError({cause: lastError});
 		} catch (error) {
 			// Don't throw a cancellation error for consistency with DNS
 			if (!(error instanceof CancelError)) {
