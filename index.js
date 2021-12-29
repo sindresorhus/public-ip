@@ -242,7 +242,11 @@ const publicIp = options => {
 			promise.resolve(returnIp)
 		}
 	}, timeout)		
-			
+
+	promise.cancel = function () {
+		return cancel.apply(this);
+	};
+
 	v6.then(
 			(ip) => {
 				returnIp = ip;
