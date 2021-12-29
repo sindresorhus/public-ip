@@ -256,7 +256,7 @@ const publicIp = options => {
 				returnIp = ip;
 				promise.resolve(returnIp)
 			},
-			(_err) => {s
+			(_err) => {
 				onTimeout()
 			}
 		)
