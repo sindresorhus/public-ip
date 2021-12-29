@@ -230,7 +230,7 @@ const queryAll = (version, options) => {
 
 const publicIp = options => {
 
-	let timeout = typeof options.timeout === "number" ? options.timeout : 2000;
+	let timeout = typeof options.timeout === "number" ? options.timeout : defaults.timeout;
 	let returnIp = "";	
 	let promise = new Promise()
 	let v6 = publicIp.v6(options)
