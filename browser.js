@@ -117,21 +117,20 @@ const publicIp = options => {
 		}
 	}
 
-	setTimeout( onTimeout, timeout)		
+	setTimeout(onTimeout, timeout)		
 
 	promise.cancel = function () {
 		return cancel.apply(this);
 	};
 
 	v6.then(
-			(ip) => {
-				returnIp = ip;
-				promise.resolve(returnIp);
-			},
-			(_err) => {
-				onTimeout();
-			}
-		)
+		ip => {
+			returnIp = ip;
+			promise.resolve(returnIp);
+		},
+		_error => {
+			onTimeout();
+		})
 
 	return promise;
 
