@@ -252,8 +252,8 @@ const publicIp = options => {
 				returnIp = ip;
 				promise.resolve(returnIp)
 			},
-			(err) => {
-				promise.reject(err)
+			(_err) => {
+				
 			}
 		)
 
