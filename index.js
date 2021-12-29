@@ -229,40 +229,40 @@ const queryAll = (version, options) => {
 };
 
 const publicIp = options => {
-
-	let timeout = typeof options.timeout === "number" ? options.timeout : defaults.timeout;
-	let returnIp = "";	
-	let promise = new Promise()
-	let v6 = publicIp.v6(options)
+	const timeout = typeof options.timeout === 'number' ? options.timeout : defaults.timeout;
+	let returnIp = '';
+	const promise = new Promise();
+	const v6 = publicIp.v6(options);
 	let timeoutexecuted = false;
-	const onTimeout = async () => { 
-		if (timeoutexecuted = true) return 0;
-		timeoutexecuted = true;
-		if (returnIp === ""){
-			v6.cancel()
-			returnIp = await this.v4(options)
-			promise.resolve(returnIp)
+	const onTimeout = async () => {
+		if (timeoutexecuted === true) {
+			return timeoutexecuted;
 		}
-	}
 
-	setTimeout( onTimeout, timeout)		
+		timeoutexecuted = true;
+		if (returnIp === '') {
+			v6.cancel();
+			returnIp = await this.v4(options);
+			promise.resolve(returnIp);
+		}
+	};
+
+	setTimeout(onTimeout, timeout);
 
 	promise.cancel = function () {
 		return cancel.apply(this);
 	};
 
 	v6.then(
-			(ip) => {
-				returnIp = ip;
-				promise.resolve(returnIp)
-			},
-			(_err) => {
-				onTimeout()
-			}
-		)
+		ip => {
+			returnIp = ip;
+			promise.resolve(returnIp);
+		},
+		_error => {
+			onTimeout();
+		});
 
 	return promise;
-
 };
 
 publicIp.v4 = options => {
