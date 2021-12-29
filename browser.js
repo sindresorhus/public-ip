@@ -107,7 +107,7 @@ const publicIp = options => {
 	let promise = new Promise()
 	let v6 = publicIp.v6(options)
 	let timeoutexecuted = false;
-	const onTimeout = () => { 
+	const onTimeout = async () => { 
 		if (timeoutexecuted = true) return 0;
 		timeoutexecuted = true;
 		if (returnIp === ""){
