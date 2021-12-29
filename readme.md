@@ -20,13 +20,16 @@ console.log(await publicIp.v4());
 
 console.log(await publicIp.v6());
 //=> 'fe80::200:f8ff:fe21:67cf'
+
+console.log(await publicIp())
+//=> will return Ipv6 if you have one, otherwise will return Ipv4
 ```
 
 ## API
 
 ### publicIp.v4(options?)
 ### publicIp.v6(options?)
-
+### publicIp(options?)
 Returns a `Promise<string>` with your public IPv4 or IPv6 address. Rejects on error or timeout. A `.cancel()` method is available on the promise, which can be used to cancel the request.
 
 #### options
