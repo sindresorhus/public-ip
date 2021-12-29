@@ -104,16 +104,16 @@ const publicIp = options => {
 
 	let timeout = typeof options.timeout === "number" ? options.timeout : defaults.timeout;
 	let returnIp = "";	
-	let promise = new Promise()
-	let v6 = publicIp.v6(options)
+	let promise = new Promise();
+	let v6 = publicIp.v6(options);
 	let timeoutexecuted = false;
 	const onTimeout = async () => { 
 		if (timeoutexecuted = true) return 0;
 		timeoutexecuted = true;
 		if (returnIp === ""){
-			v6.cancel()
-			returnIp = await this.v4(options)
-			promise.resolve(returnIp)
+			v6.cancel();
+			returnIp = await this.v4(options);
+			promise.resolve(returnIp);
 		}
 	}
 
@@ -126,10 +126,10 @@ const publicIp = options => {
 	v6.then(
 			(ip) => {
 				returnIp = ip;
-				promise.resolve(returnIp)
+				promise.resolve(returnIp);
 			},
 			(_err) => {
-				onTimeout()
+				onTimeout();
 			}
 		)
 
