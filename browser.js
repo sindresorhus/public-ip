@@ -106,19 +106,20 @@ const publicIp = options => {
 	const promise = new Promise();
 	const v6 = publicIp.v6(options);
 	let timeoutexecuted = false;
-	const onTimeout = async() => { 
+	const onTimeout = async () => { 
 		if (timeoutexecuted === true) {
-			return timeoutexecuted
-		};
+			return timeoutexecuted;
+		}
+
 		timeoutexecuted = true;
-		if (returnIp === "") {
+		if (returnIp === '') {
 			v6.cancel();
 			returnIp = await this.v4(options);
 			promise.resolve(returnIp);
 		}
 	};
 
-	setTimeout(onTimeout,timeout);		
+	setTimeout(onTimeout, timeout);		
 
 	promise.cancel = function () {
 		return cancel.apply(this);
