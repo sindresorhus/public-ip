@@ -110,7 +110,6 @@ const publicIp = options => {
 	
 	setTimeout( () => { 
 		if (returnIp === ""){
-			//check if promise is still pending or was rejected (for any reason) [TODO]
 			v6.cancel()
 			returnIp = await this.v4(options)
 			promise.resolve(returnIp)
