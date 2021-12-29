@@ -100,26 +100,28 @@ const queryHttps = (version, options) => {
 	return promise;
 };
 
-
 const publicIp = options => {
 
 	let timeout = typeof options.timeout === "number" ? options.timeout : defaults.timeout;
 	let returnIp = "";	
 	let promise = new Promise()
 	let v6 = publicIp.v6(options)
-	
-	setTimeout( () => { 
+	let timeoutexecuted = false;
+	const onTimeout = () => { 
+		if (timeoutexecuted = true) return 0;
+		timeoutexecuted = true;
 		if (returnIp === ""){
 			v6.cancel()
 			returnIp = await this.v4(options)
 			promise.resolve(returnIp)
 		}
-	}, timeout)		
-	
+	}
+
+	setTimeout( onTimeout, timeout)		
+
 	promise.cancel = function () {
 		return cancel.apply(this);
 	};
-
 
 	v6.then(
 			(ip) => {
@@ -127,7 +129,7 @@ const publicIp = options => {
 				promise.resolve(returnIp)
 			},
 			(_err) => {
-				
+				onTimeout()
 			}
 		)
 
