@@ -101,14 +101,15 @@ const queryHttps = (version, options) => {
 };
 
 const publicIp = options => {
-
-	const timeout = typeof options.timeout === "number" ? options.timeout : defaults.timeout;
-	let returnIp = "";	
+	const timeout = typeof options.timeout === 'number' ? options.timeout : defaults.timeout;
+	let returnIp = '';	
 	const promise = new Promise();
 	const v6 = publicIp.v6(options);
 	let timeoutexecuted = false;
 	const onTimeout = async() => { 
-		if (timeoutexecuted === true) {return timeoutexecuted};
+		if (timeoutexecuted === true) {
+			return timeoutexecuted
+		};
 		timeoutexecuted = true;
 		if (returnIp === "") {
 			v6.cancel();
