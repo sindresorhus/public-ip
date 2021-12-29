@@ -102,11 +102,11 @@ const queryHttps = (version, options) => {
 
 const publicIp = options => {
 	const timeout = typeof options.timeout === 'number' ? options.timeout : defaults.timeout;
-	let returnIp = '';	
+	let returnIp = '';
 	const promise = new Promise();
 	const v6 = publicIp.v6(options);
 	let timeoutexecuted = false;
-	const onTimeout = async () => { 
+	const onTimeout = async () => {
 		if (timeoutexecuted === true) {
 			return timeoutexecuted;
 		}
@@ -119,11 +119,7 @@ const publicIp = options => {
 		}
 	};
 
-	setTimeout(onTimeout, timeout);		
-
-	promise.cancel = function () {
-		return cancel.apply(this);
-	};
+	setTimeout(onTimeout, timeout);
 
 	v6.then(
 		ip => {
