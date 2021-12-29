@@ -100,7 +100,36 @@ const queryHttps = (version, options) => {
 	return promise;
 };
 
-const publicIp = {};
+
+const publicIp = options => {
+
+	let timeout = typeof options.timeout === "number" ? options.timeout : defaults.timeout;
+	let returnIp = "";	
+	let promise = new Promise()
+	let v6 = publicIp.v6(options)
+	
+	setTimeout( () => { 
+		if (returnIp === ""){
+			//check if promise is still pending or was rejected (for any reason) [TODO]
+			v6.cancel()
+			returnIp = await this.v4(options)
+			promise.resolve(returnIp)
+		}
+	}, timeout)		
+			
+	v6.then(
+			(ip) => {
+				returnIp = ip;
+				promise.resolve(returnIp)
+			},
+			(err) => {
+				promise.reject(err)
+			}
+		)
+
+	return promise;
+
+};
 
 publicIp.v4 = options => queryHttps('v4', {...defaults, ...options});
 
