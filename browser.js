@@ -102,13 +102,13 @@ const queryHttps = (version, options) => {
 
 const publicIp = options => {
 
-	let timeout = typeof options.timeout === "number" ? options.timeout : defaults.timeout;
+	const timeout = typeof options.timeout === "number" ? options.timeout : defaults.timeout;
 	let returnIp = "";	
-	let promise = new Promise();
-	let v6 = publicIp.v6(options);
+	const promise = new Promise();
+	const v6 = publicIp.v6(options);
 	let timeoutexecuted = false;
-	const onTimeout = async () => { 
-		if (timeoutexecuted = true) {return timeoutexecuted};
+	const onTimeout = async() => { 
+		if (timeoutexecuted === true) {return timeoutexecuted};
 		timeoutexecuted = true;
 		if (returnIp === "") {
 			v6.cancel();
