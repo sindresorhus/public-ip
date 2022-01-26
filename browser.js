@@ -101,36 +101,9 @@ const queryHttps = (version, options) => {
 };
 
 const publicIp = options => {
-	const timeout = typeof options.timeout === 'number' ? options.timeout : defaults.timeout;
-	let returnIp = '';
-	const promise = new Promise();
 	const v6 = publicIp.v6(options);
-	let timeoutexecuted = false;
-	const onTimeout = async () => {
-		if (timeoutexecuted === true) {
-			return timeoutexecuted;
-		}
-
-		timeoutexecuted = true;
-		if (returnIp === '') {
-			v6.cancel();
-			returnIp = await this.v4(options);
-			promise.resolve(returnIp);
-		}
-	};
-
-	setTimeout(onTimeout, timeout);
-
-	v6.then(
-		ip => {
-			returnIp = ip;
-			promise.resolve(returnIp);
-		},
-		_error => {
-			onTimeout();
-		});
-
-	return promise;
+	const v4 = publicIp.v4(options);
+	return Promise.any([v6, v4]);
 };
 
 publicIp.v4 = options => queryHttps('v4', {...defaults, ...options});
