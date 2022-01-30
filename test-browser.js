@@ -7,4 +7,4 @@ console.log('IP:', await publicIp.v4({
 		'https://ifconfig.me',
 	],
 }));
-console.log('IP:', await publicIp())
+console.log('IP:', await publicIp());
