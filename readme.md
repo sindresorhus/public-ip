@@ -21,8 +21,8 @@ console.log(await publicIp.v4());
 console.log(await publicIp.v6());
 //=> 'fe80::200:f8ff:fe21:67cf'
 
-console.log(await publicIp())
-//=> will return Ipv6 if you have one, otherwise will return Ipv4
+console.log(await publicIp());
+//=> 'fe80::200:f8ff:fe21:67cf'
 ```
 
 ## API

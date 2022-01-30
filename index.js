@@ -229,10 +229,10 @@ const queryAll = (version, options) => {
 };
 
 const publicIp = (options) => {
-	const v6 = publicIp.v6(options);
-	const v4 = publicIp.v4(options);
-	return Promise.any([v6, v4]);
-
+	return Promise.any([
+		publicIp.v4(options),
+		publicIp.v6(options),
+	]);
 };
 
 publicIp.v4 = options => {
