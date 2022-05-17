@@ -13,19 +13,23 @@ npm install public-ip
 ## Usage
 
 ```js
-import publicIp from 'public-ip';
+import publicIp, {publicIpv4, publicIpv6} from 'public-ip';
 
-console.log(await publicIp.v4());
+console.log(await publicIpv4());
 //=> '46.5.21.123'
 
-console.log(await publicIp.v6());
+console.log(await publicIpv6());
+//=> 'fe80::200:f8ff:fe21:67cf'
+
+console.log(await publicIp()); // Falls back to IPv4
 //=> 'fe80::200:f8ff:fe21:67cf'
 ```
 
 ## API
 
-### publicIp.v4(options?)
-### publicIp.v6(options?)
+### publicIp(options?)
+### publicIpv4(options?)
+### publicIpv6(options?)
 
 Returns a `Promise<string>` with your public IPv4 or IPv6 address. Rejects on error or timeout. A `.cancel()` method is available on the promise, which can be used to cancel the request.
 
@@ -48,9 +52,9 @@ Default: `[]`
 Add your own custom HTTPS endpoints to get the public IP from. They will only be used if everything else fails. Any service used as fallback *must* return the IP as a plain string.
 
 ```js
-import publicIp from 'public-ip';
+import {publicIpv6} from 'public-ip';
 
-await publicIp.v6({
+await publicIpv6({
 	fallbackUrls: [
 		'https://ifconfig.co/ip'
 	]

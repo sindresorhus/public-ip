@@ -21,12 +21,12 @@ export default function stub(objectPath, propertyName, ignoreIndex) {
 	sinon.stub(objectPath, propertyName).callsFake(stub);
 
 	return {
-		ignore: _ignoreRegExp => {
+		ignore(_ignoreRegExp) {
 			ignoreRegExp = _ignoreRegExp;
 		},
 		ignored: () => ignored.length,
 		called: () => objectPath[propertyName].callCount,
-		restore: () => {
+		restore() {
 			ignoreRegExp = undefined;
 			ignored = [];
 			objectPath[propertyName].resetHistory();
