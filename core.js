@@ -31,11 +31,8 @@ export function createPublicIp(publicIpv4, publicIpv6) {
 		})();
 
 		promise.cancel = () => {
-			// Wait for cancellation methods to be assigned
-			setImmediate(() => {
-				ipv4Promise.cancel();
-				ipv6Promise.cancel();
-			});
+			ipv4Promise.cancel();
+			ipv6Promise.cancel();
 		};
 
 		return promise;
