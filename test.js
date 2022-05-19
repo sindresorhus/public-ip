@@ -92,17 +92,15 @@ if (!process.env.CI) {
 	});
 }
 
-test('IPv4 or IPv6', async t => {
-	const ip = await publicIp({timeout: 100});
+test.serial('IPv4 or IPv6', async t => {
+	const ip = await publicIp({timeout: 500});
 	t.true(isIp.v4(ip) || isIp.v6(ip));
 });
 
-test('IPv4 or IPv6 cancellation', async t => {
+test.serial('IPv4 or IPv6 cancellation', async t => {
 	const timeout = 5000;
-	console.log('start')
 	const end = timeSpan();
 	const promise = publicIp({timeout});
-	console.log(promise)
 	promise.cancel();
 	await promise;
 	t.true(end() < timeout);
