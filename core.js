@@ -17,14 +17,14 @@ export function createPublicIp(publicIpv4, publicIpv6) {
 				const ipv6 = await ipv6Promise;
 				ipv4Promise.cancel();
 				return ipv6;
-			} catch (ipv4Error) {
-				if (!(ipv4Error instanceof IpNotFoundError)) {
-					throw ipv4Error;
+			} catch (ipv6Error) {
+				if (!(ipv6Error instanceof IpNotFoundError)) {
+					throw ipv6Error;
 				}
 
 				try {
 					return await ipv4Promise;
-				} catch (ipv6Error) {
+				} catch (ipv4Error) {
 					throw new AggregateError([ipv4Error, ipv6Error]);
 				}
 			}
