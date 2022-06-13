@@ -55,7 +55,7 @@ In Node.js, it queries the DNS records of OpenDNS, Google DNS, and HTTPS service
 
 @example
 ```
-import publicIp from 'public-ip';
+import {publicIp} from 'public-ip';
 
 console.log(await publicIp()); // Falls back to IPv4
 //=> 'fe80::200:f8ff:fe21:67cf'

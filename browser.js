@@ -1,4 +1,4 @@
-import isIp from 'is-ip';
+import {isIPv6, isIPv4} from 'is-ip';
 import {createPublicIp, IpNotFoundError} from './core.js';
 
 export class CancelError extends Error {
@@ -40,8 +40,9 @@ const sendXhr = (url, options, version) => {
 
 		xhr.addEventListener('load', () => {
 			const ip = xhr.responseText.trim();
+			const method = version === 'v6' ? isIPv6 : isIPv4;
 
-			if (!ip || !isIp[version](ip)) {
+			if (!ip || !method(ip)) {
 				reject();
 				return;
 			}
@@ -96,7 +97,7 @@ const queryHttps = (version, options) => {
 	return promise;
 };
 
-export default createPublicIp(publicIpv4, publicIpv6);
+export const publicIp = createPublicIp(publicIpv4, publicIpv6);
 
 export function publicIpv4(options) {
 	return queryHttps('v4', {...defaults, ...options});

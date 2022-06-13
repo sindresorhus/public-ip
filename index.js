@@ -2,7 +2,7 @@ import {promisify} from 'node:util';
 import dgram from 'node:dgram';
 import dns from 'dns-socket';
 import got, {CancelError} from 'got';
-import isIp from 'is-ip';
+import {isIPv6, isIPv4} from 'is-ip';
 import {createPublicIp, IpNotFoundError} from './core.js';
 
 export {IpNotFoundError} from './core.js';
@@ -120,7 +120,9 @@ const queryDns = (version, options) => {
 
 					const ip = transform ? transform(response) : response;
 
-					if (ip && isIp[version](ip)) {
+					const method = version === 'v6' ? isIPv6 : isIPv4;
+
+					if (ip && method(ip)) {
 						socket.destroy();
 						return ip;
 					}
@@ -174,7 +176,9 @@ const queryHttps = (version, options) => {
 
 					const ip = (response.body || '').trim();
 
-					if (ip && isIp[version](ip)) {
+					const method = version === 'v6' ? isIPv6 : isIPv4;
+
+					if (ip && method(ip)) {
 						return ip;
 					}
 				} catch (error) {
@@ -224,7 +228,7 @@ const queryAll = (version, options) => {
 	return promise;
 };
 
-export default createPublicIp(publicIpv4, publicIpv6);
+export const publicIp = createPublicIp(publicIpv4, publicIpv6);
 
 export function publicIpv4(options) {
 	options = {
