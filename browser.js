@@ -1,4 +1,5 @@
 import isIp from 'is-ip';
+import {createPublicIp, IpNotFoundError} from './core.js';
 
 export class CancelError extends Error {
 	constructor() {
@@ -11,12 +12,7 @@ export class CancelError extends Error {
 	}
 }
 
-export class IpNotFoundError extends Error {
-	constructor(options) {
-		super('Could not get the public IP address', options);
-		this.name = 'IpNotFoundError';
-	}
-}
+export {IpNotFoundError} from './core.js';
 
 const defaults = {
 	timeout: 5000,
@@ -100,10 +96,12 @@ const queryHttps = (version, options) => {
 	return promise;
 };
 
-const publicIp = {};
+export default createPublicIp(publicIpv4, publicIpv6);
 
-publicIp.v4 = options => queryHttps('v4', {...defaults, ...options});
+export function publicIpv4(options) {
+	return queryHttps('v4', {...defaults, ...options});
+}
 
-publicIp.v6 = options => queryHttps('v6', {...defaults, ...options});
-
-export default publicIp;
+export function publicIpv6(options) {
+	return queryHttps('v6', {...defaults, ...options});
+}

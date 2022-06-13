@@ -3,13 +3,9 @@ import dgram from 'node:dgram';
 import dns from 'dns-socket';
 import got, {CancelError} from 'got';
 import isIp from 'is-ip';
+import {createPublicIp, IpNotFoundError} from './core.js';
 
-export class IpNotFoundError extends Error {
-	constructor(options) {
-		super('Could not get the public IP address', options);
-		this.name = 'IpNotFoundError';
-	}
-}
+export {IpNotFoundError} from './core.js';
 
 const defaults = {
 	timeout: 5000,
@@ -228,9 +224,9 @@ const queryAll = (version, options) => {
 	return promise;
 };
 
-const publicIp = {};
+export default createPublicIp(publicIpv4, publicIpv6);
 
-publicIp.v4 = options => {
+export function publicIpv4(options) {
 	options = {
 		...defaults,
 		...options,
@@ -245,9 +241,9 @@ publicIp.v4 = options => {
 	}
 
 	return queryDns('v4', options);
-};
+}
 
-publicIp.v6 = options => {
+export function publicIpv6(options) {
 	options = {
 		...defaults,
 		...options,
@@ -262,8 +258,6 @@ publicIp.v6 = options => {
 	}
 
 	return queryDns('v6', options);
-};
-
-export default publicIp;
+}
 
 export {CancelError} from 'got';

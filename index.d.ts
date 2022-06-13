@@ -29,9 +29,9 @@ export interface Options {
 
 	@example
 	```
-	import publicIp from 'public-ip';
+	import {publicIpv6} from 'public-ip';
 
-	await publicIp.v6({
+	await publicIpv6({
 		fallbackUrls: [
 			'https://ifconfig.co/ip'
 		]
@@ -45,44 +45,58 @@ export type CancelablePromise<T> = Promise<T> & {
 	cancel(): void;
 };
 
-declare const publicIp: {
-	/**
-	Get your public IP address - very fast!
+/**
+Get your public IP address - very fast!
 
-	In Node.js, it queries the DNS records of OpenDNS, Google DNS, and HTTPS services to determine your IP address. In browsers, it uses the excellent [icanhaz](https://github.com/major/icanhaz) and [ipify](https://ipify.org) services through HTTPS.
+In Node.js, it queries the DNS records of OpenDNS, Google DNS, and HTTPS services to determine your IP address. In browsers, it uses the excellent [icanhaz](https://github.com/major/icanhaz) and [ipify](https://ipify.org) services through HTTPS.
 
-	@returns Your public IPv4 address. A `.cancel()` method is available on the promise, which can be used to cancel the request.
-	@throws On error or timeout.
+@returns Your public IPv6 address or as a fallback, your public IPv4 address. A `.cancel()` method is available on the promise, which can be used to cancel the request.
+@throws On error or timeout.
 
-	@example
-	```
-	import publicIp from 'public-ip';
+@example
+```
+import publicIp from 'public-ip';
 
-	console.log(await publicIp.v4());
-	//=> '46.5.21.123'
-	```
-	*/
-	v4(options?: Options): CancelablePromise<string>;
+console.log(await publicIp()); // Falls back to IPv4
+//=> 'fe80::200:f8ff:fe21:67cf'
+```
+*/
+export function publicIp(options?: Options): CancelablePromise<string>;
 
-	/**
-	Get your public IP address - very fast!
+/**
+Get your public IP address - very fast!
 
-	In Node.js, it queries the DNS records of OpenDNS, Google DNS, and HTTPS services to determine your IP address. In browsers, it uses the excellent [icanhaz](https://github.com/major/icanhaz) and [ipify](https://ipify.org) services through HTTPS.
+In Node.js, it queries the DNS records of OpenDNS, Google DNS, and HTTPS services to determine your IP address. In browsers, it uses the excellent [icanhaz](https://github.com/major/icanhaz) and [ipify](https://ipify.org) services through HTTPS.
 
-	@returns Your public IPv6 address. A `.cancel()` method is available on the promise, which can be used to cancel the request.
-	@throws On error or timeout.
+@returns Your public IPv4 address. A `.cancel()` method is available on the promise, which can be used to cancel the request.
+@throws On error or timeout.
 
-	@example
-	```
-	import publicIp from 'public-ip';
+@example
+```
+import {publicIpv4} from 'public-ip';
 
-	console.log(await publicIp.v6());
-	//=> 'fe80::200:f8ff:fe21:67cf'
-	```
-	*/
-	v6(options?: Options): CancelablePromise<string>;
-};
+console.log(await publicIpv4());
+//=> '46.5.21.123'
+```
+*/
+export function publicIpv4(options?: Options): CancelablePromise<string>;
 
-export default publicIp;
+/**
+Get your public IP address - very fast!
+
+In Node.js, it queries the DNS records of OpenDNS, Google DNS, and HTTPS services to determine your IP address. In browsers, it uses the excellent [icanhaz](https://github.com/major/icanhaz) and [ipify](https://ipify.org) services through HTTPS.
+
+@returns Your public IPv6 address. A `.cancel()` method is available on the promise, which can be used to cancel the request.
+@throws On error or timeout.
+
+@example
+```
+import {publicIpv6} from 'public-ip';
+
+console.log(await publicIpv6());
+//=> 'fe80::200:f8ff:fe21:67cf'
+```
+*/
+export function publicIpv6(options?: Options): CancelablePromise<string>;
 
 export {CancelError} from 'got';
