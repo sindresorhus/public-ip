@@ -12,7 +12,7 @@
 	},
 	"type": "module",
 	"exports": {
-		"types": "./index.js",
+		"types": "./index.d.ts",
 		"node": "./index.js",
 		"default": "./browser.js"
 	},
