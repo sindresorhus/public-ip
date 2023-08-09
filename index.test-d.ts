@@ -1,5 +1,5 @@
 import {expectType} from 'tsd';
-import {publicIp, publicIpv4, publicIpv6, CancelablePromise} from './index.js';
+import {publicIp, publicIpv4, publicIpv6, type CancelablePromise} from './index.js';
 
 expectType<CancelablePromise<string>>(publicIpv4());
 expectType<CancelablePromise<string>>(publicIpv4({onlyHttps: true}));
