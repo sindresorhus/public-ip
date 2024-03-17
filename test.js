@@ -1,5 +1,6 @@
 import process from 'node:process';
 import test from 'ava';
+import esmock from 'esmock';
 import {isIPv6, isIPv4} from 'is-ip';
 import timeSpan from 'time-span';
 import dnsStub from './mocks/dns-socket.js';
@@ -89,6 +90,21 @@ if (!process.env.CI) {
 
 	test('IPv6 HTTPS', async t => {
 		t.true(isIPv6(await publicIpv6({onlyHttps: true})));
+	});
+
+	test('IPv4 call cancels after IPv6 call succeeds first', async t => {
+		const {publicIp} = await esmock('./index.js', {
+			publicIpv4(...arguments_) {
+				const promise = publicIpv4(...arguments_);
+
+				const returnValue = new Promise(() => {});
+				returnValue.cancel = promise.cancel;
+
+				return returnValue;
+			},
+		});
+
+		t.true(isIPv6(await publicIp()));
 	});
 }
 

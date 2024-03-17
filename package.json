@@ -49,6 +49,7 @@
 	},
 	"devDependencies": {
 		"ava": "^4.3.0",
+		"esmock": "^2.6.4",
 		"sinon": "^14.0.0",
 		"time-span": "^5.0.0",
 		"tsd": "^0.21.0",
@@ -64,6 +65,9 @@
 		"serial": true,
 		"files": [
 			"test.js"
+		],
+		"nodeArguments": [
+			"--loader=esmock"
 		]
 	}
 }
