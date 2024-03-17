@@ -15,7 +15,8 @@ export function createPublicIp(publicIpv4, publicIpv6) {
 		const promise = (async () => {
 			try {
 				const ipv6 = await ipv6Promise;
-				ipv4Promise.catch(() => {}).cancel();
+				ipv4Promise.catch(() => {});
+				ipv4Promise.cancel();
 				return ipv6;
 			} catch (ipv6Error) {
 				if (!(ipv6Error instanceof IpNotFoundError)) {
