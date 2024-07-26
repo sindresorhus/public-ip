@@ -43,7 +43,7 @@ const dnsServers = [
 			],
 			name: 'o-o.myaddr.l.google.com',
 			type: 'TXT',
-			transform: ip => ip.replace(/"/g, ''),
+			transform: ip => ip.replaceAll('"', ''),
 		},
 		v6: {
 			servers: [
@@ -54,7 +54,7 @@ const dnsServers = [
 			],
 			name: 'o-o.myaddr.l.google.com',
 			type: 'TXT',
-			transform: ip => ip.replace(/"/g, ''),
+			transform: ip => ip.replaceAll('"', ''),
 		},
 	},
 ];
@@ -174,8 +174,7 @@ const queryHttps = (version, options) => {
 					// eslint-disable-next-line no-await-in-loop
 					const response = await gotPromise;
 
-					const ip = (response.body || '').trim();
-
+					const ip = response.body?.trim();
 					const method = version === 'v6' ? isIPv6 : isIPv4;
 
 					if (ip && method(ip)) {

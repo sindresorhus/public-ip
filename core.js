@@ -1,5 +1,3 @@
-import AggregateError from 'aggregate-error'; // Use built-in when targeting Node.js 16
-
 export class IpNotFoundError extends Error {
 	constructor(options) {
 		super('Could not get the public IP address', options);
@@ -15,7 +13,10 @@ export function createPublicIp(publicIpv4, publicIpv6) {
 		const promise = (async () => {
 			try {
 				const ipv6 = await ipv6Promise;
+
+				// eslint-disable-next-line promise/prefer-await-to-then
 				ipv4Promise.catch(() => {}); // Don't throw when cancelling
+
 				ipv4Promise.cancel();
 				return ipv6;
 			} catch (ipv6Error) {
@@ -26,7 +27,7 @@ export function createPublicIp(publicIpv4, publicIpv6) {
 				try {
 					return await ipv4Promise;
 				} catch (ipv4Error) {
-					throw new AggregateError([ipv4Error, ipv6Error]);
+					throw new AggregateError([ipv4Error, ipv6Error]); // eslint-disable-line unicorn/error-message
 				}
 			}
 		})();

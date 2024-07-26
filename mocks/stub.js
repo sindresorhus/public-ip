@@ -6,16 +6,16 @@ export default function stub(objectPath, propertyName, ignoreIndex) {
 
 	const original = objectPath[propertyName];
 
-	function stub(...args) {
+	function stub(...arguments_) {
 		if (ignoreIndex !== undefined) {
-			const ignoreArgument = args.slice(ignoreIndex, ignoreIndex + 1)[0];
+			const ignoreArgument = arguments_.slice(ignoreIndex, ignoreIndex + 1)[0];
 			if (ignoreRegExp && ignoreRegExp.test(ignoreArgument)) {
 				ignored.push(ignoreArgument);
 				throw new Error('Ignored by mock');
 			}
 		}
 
-		return original.bind(this)(...args);
+		return original.bind(this)(...arguments_);
 	}
 
 	sinon.stub(objectPath, propertyName).callsFake(stub);
