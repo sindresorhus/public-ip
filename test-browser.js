@@ -1,5 +1,4 @@
-// Comment out the `is-ip` dependency, launch a local server, and then load the HTMl file.
-import {publicIp, publicIpv4} from './browser.js';
+import {publicIp, publicIpv4} from './source/browser.js';
 
 console.log('IP:', await publicIpv4());
 

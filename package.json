@@ -12,23 +12,19 @@
 	},
 	"type": "module",
 	"exports": {
-		"types": "./index.d.ts",
-		"node": "./index.js",
-		"default": "./browser.js"
+		"types": "./source/index.d.ts",
+		"node": "./source/index.js",
+		"default": "./source/browser.js"
 	},
 	"sideEffects": false,
 	"engines": {
 		"node": ">=20"
 	},
 	"scripts": {
-		"//test": "xo && ava && tsc index.d.ts",
-		"test": "xo && ava"
+		"test": "xo && node --test test-node.js && tsc source/index.d.ts --skipLibCheck"
 	},
 	"files": [
-		"index.js",
-		"index.d.ts",
-		"browser.js",
-		"core.js"
+		"source"
 	],
 	"keywords": [
 		"get",
@@ -45,31 +41,11 @@
 	],
 	"dependencies": {
 		"dns-socket": "^4.2.2",
-		"got": "^14.4.8",
 		"is-ip": "^5.0.1"
 	},
 	"devDependencies": {
 		"@sindresorhus/tsconfig": "^8.0.1",
-		"ava": "^6.4.1",
-		"esmock": "^2.7.3",
-		"sinon": "^21.0.0",
-		"time-span": "^5.1.0",
 		"typescript": "^5.9.2",
 		"xo": "^1.2.2"
-	},
-	"xo": {
-		"envs": [
-			"node",
-			"browser"
-		]
-	},
-	"ava": {
-		"serial": true,
-		"files": [
-			"test.js"
-		],
-		"nodeArguments": [
-			"--loader=esmock"
-		]
 	}
 }
