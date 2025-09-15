@@ -88,11 +88,6 @@ Error thrown when the public IP address could not be found.
 
 Error thrown when the operation was canceled.
 
-## Maintainers
-
-- [Sindre Sorhus](https://github.com/sindresorhus)
-- [silverwind](https://github.com/silverwind)
-
 ## Related
 
 - [public-ip-cli](https://github.com/sindresorhus/public-ip-cli) - CLI for this module

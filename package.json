@@ -18,7 +18,7 @@
 	},
 	"sideEffects": false,
 	"engines": {
-		"node": ">=18"
+		"node": ">=20"
 	},
 	"scripts": {
 		"//test": "xo && ava && tsc index.d.ts",
@@ -45,17 +45,17 @@
 	],
 	"dependencies": {
 		"dns-socket": "^4.2.2",
-		"got": "^13.0.0",
+		"got": "^14.4.8",
 		"is-ip": "^5.0.1"
 	},
 	"devDependencies": {
-		"@sindresorhus/tsconfig": "^6.0.0",
-		"ava": "^5.3.1",
-		"esmock": "^2.6.7",
-		"sinon": "^18.0.0",
+		"@sindresorhus/tsconfig": "^8.0.1",
+		"ava": "^6.4.1",
+		"esmock": "^2.7.3",
+		"sinon": "^21.0.0",
 		"time-span": "^5.1.0",
-		"typescript": "^5.5.4",
-		"xo": "^0.59.2"
+		"typescript": "^5.9.2",
+		"xo": "^1.2.2"
 	},
 	"xo": {
 		"envs": [
