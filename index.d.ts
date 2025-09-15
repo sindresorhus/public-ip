@@ -16,7 +16,7 @@ export type Options = {
 	readonly onlyHttps?: boolean;
 
 	/**
-	The time in milliseconds until a request is considered timed out.
+	The time in milliseconds until the operation is considered timed out. This applies to the entire operation, not individual requests.
 
 	@default 5000
 	*/

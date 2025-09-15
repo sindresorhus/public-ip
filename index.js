@@ -80,149 +80,206 @@ const type = {
 	},
 };
 
-const queryDns = (version, options) => {
-	const data = type[version];
+const validateIp = (ip, version) => {
+	const method = version === 'v6' ? isIPv6 : isIPv4;
+	return ip && method(ip);
+};
 
-	const socket = dns({
-		retries: 0,
-		maxQueries: 1,
-		socket: dgram.createSocket(version === 'v6' ? 'udp6' : 'udp4'),
-		timeout: options.timeout,
+const withTimeout = (promise, timeout) => {
+	let timeoutId;
+	const timeoutPromise = new Promise((_resolve, reject) => {
+		timeoutId = setTimeout(() => {
+			reject(new IpNotFoundError({cause: new Error(`Timeout of ${timeout}ms exceeded`)}));
+		}, timeout);
 	});
 
-	const socketQuery = promisify(socket.query.bind(socket));
+	const wrappedPromise = (async () => {
+		try {
+			return await Promise.race([promise, timeoutPromise]);
+		} finally {
+			clearTimeout(timeoutId);
+		}
+	})();
+
+	wrappedPromise.cancel = () => {
+		clearTimeout(timeoutId);
+		promise.cancel?.();
+	};
+
+	return wrappedPromise;
+};
+
+const queryDns = version => {
+	const data = type[version];
+	const sockets = [];
+	let cancelled = false;
 
 	const promise = (async () => {
-		let lastError;
+		const queries = [];
 
 		for (const dnsServerInfo of data.dnsServers) {
 			const {servers, question} = dnsServerInfo;
 			for (const server of servers) {
-				if (socket.destroyed) {
-					return;
+				if (cancelled) {
+					break;
 				}
 
-				try {
-					const {name, type, transform} = question;
+				const socket = dns({
+					retries: 0,
+					maxQueries: 1,
+					socket: dgram.createSocket(version === 'v6' ? 'udp6' : 'udp4'),
+					timeout: 30_000, // Use high individual timeout, overall timeout handled by wrapper
+				});
 
-					// eslint-disable-next-line no-await-in-loop
-					const dnsResponse = await socketQuery({questions: [{name, type}]}, 53, server);
+				sockets.push(socket);
+				const socketQuery = promisify(socket.query.bind(socket));
 
-					const {
-						answers: {
-							0: {
-								data,
+				const queryPromise = (async () => {
+					try {
+						const {name, type, transform} = question;
+						const dnsResponse = await socketQuery({questions: [{name, type}]}, 53, server);
+
+						const {
+							answers: {
+								0: {
+									data,
+								},
 							},
-						},
-					} = dnsResponse;
+						} = dnsResponse;
 
-					const response = (typeof data === 'string' ? data : data.toString()).trim();
+						const response = (typeof data === 'string' ? data : data.toString()).trim();
+						const ip = transform ? transform(response) : response;
 
-					const ip = transform ? transform(response) : response;
+						if (validateIp(ip, version)) {
+							return ip;
+						}
 
-					const method = version === 'v6' ? isIPv6 : isIPv4;
-
-					if (ip && method(ip)) {
+						throw new Error('Invalid IP');
+					} finally {
 						socket.destroy();
-						return ip;
 					}
-				} catch (error) {
-					lastError = error;
-				}
+				})();
+
+				queries.push(queryPromise);
 			}
 		}
 
-		socket.destroy();
-
-		throw new IpNotFoundError({cause: lastError});
+		try {
+			return await Promise.any(queries);
+		} catch (error) {
+			const errors = error.errors || [];
+			const lastError = errors.at(-1) || error;
+			throw new IpNotFoundError({cause: lastError});
+		} finally {
+			for (const socket of sockets) {
+				socket.destroy();
+			}
+		}
 	})();
 
 	promise.cancel = () => {
-		socket.destroy();
+		cancelled = true;
+		for (const socket of sockets) {
+			socket.destroy();
+		}
 	};
 
 	return promise;
 };
 
 const queryHttps = (version, options) => {
-	let cancel;
+	const cancellers = [];
+	let cancelled = false;
 
 	const promise = (async () => {
-		try {
-			const requestOptions = {
-				dnsLookupIpVersion: version === 'v6' ? 6 : 4,
-				retry: {
-					limit: 0,
-				},
-				timeout: {
-					request: options.timeout,
-				},
-			};
+		const requestOptions = {
+			dnsLookupIpVersion: version === 'v6' ? 6 : 4,
+			retry: {
+				limit: 0,
+			},
+			timeout: {
+				request: 30_000, // Use high individual timeout, overall timeout handled by wrapper
+			},
+		};
 
-			const urls = [
-				...type[version].httpsUrls,
-				...(options.fallbackUrls ?? []),
-			];
+		const urls = [
+			...type[version].httpsUrls,
+			...(options.fallbackUrls ?? []),
+		];
 
-			let lastError;
-			for (const url of urls) {
-				try {
-					// Note: We use `.get` to allow for mocking.
-					const gotPromise = got.get(url, requestOptions);
-					cancel = gotPromise.cancel;
+		const requests = urls.map(url => {
+			if (cancelled) {
+				return Promise.reject(new CancelError('Request cancelled'));
+			}
 
-					// eslint-disable-next-line no-await-in-loop
-					const response = await gotPromise;
-
-					const ip = response.body?.trim();
-					const method = version === 'v6' ? isIPv6 : isIPv4;
-
-					if (ip && method(ip)) {
-						return ip;
-					}
-				} catch (error) {
-					lastError = error;
-
-					if (error instanceof CancelError) {
-						throw error;
-					}
+			return (async () => {
+				const gotPromise = got.get(url, requestOptions);
+				if (gotPromise?.cancel) {
+					cancellers.push(gotPromise.cancel);
 				}
+
+				const response = await gotPromise;
+				const ip = response.body?.trim();
+
+				if (validateIp(ip, version)) {
+					return ip;
+				}
+
+				throw new Error('Invalid IP');
+			})();
+		});
+
+		try {
+			return await Promise.any(requests);
+		} catch (error) {
+			if (error instanceof CancelError) {
+				return;
+			}
+
+			const errors = error.errors || [];
+			const lastError = errors.at(-1) || error;
+
+			if (lastError instanceof CancelError) {
+				return;
 			}
 
 			throw new IpNotFoundError({cause: lastError});
-		} catch (error) {
-			// Don't throw a cancellation error for consistency with DNS
-			if (!(error instanceof CancelError)) {
-				throw error;
-			}
 		}
 	})();
 
-	promise.cancel = function () {
-		return cancel.apply(this);
+	promise.cancel = () => {
+		cancelled = true;
+		for (const cancel of cancellers) {
+			try {
+				cancel?.();
+			} catch {
+				// Ignore cancellation errors
+			}
+		}
 	};
 
 	return promise;
 };
 
 const queryAll = (version, options) => {
-	let cancel;
-	const promise = (async () => {
-		let response;
-		const dnsPromise = queryDns(version, options);
-		cancel = dnsPromise.cancel;
-		try {
-			response = await dnsPromise;
-		} catch {
-			const httpsPromise = queryHttps(version, options);
-			cancel = httpsPromise.cancel;
-			response = await httpsPromise;
-		}
+	let dnsPromise;
+	let httpsPromise;
 
-		return response;
+	const promise = (async () => {
+		dnsPromise = queryDns(version);
+
+		try {
+			return await dnsPromise;
+		} catch {
+			httpsPromise = queryHttps(version, options);
+			return httpsPromise;
+		}
 	})();
 
-	promise.cancel = cancel;
+	promise.cancel = () => {
+		dnsPromise?.cancel();
+		httpsPromise?.cancel();
+	};
 
 	return promise;
 };
@@ -235,15 +292,11 @@ export function publicIpv4(options) {
 		...options,
 	};
 
-	if (!options.onlyHttps) {
-		return queryAll('v4', options);
-	}
+	const promise = options.onlyHttps
+		? queryHttps('v4', options)
+		: queryAll('v4', options);
 
-	if (options.onlyHttps) {
-		return queryHttps('v4', options);
-	}
-
-	return queryDns('v4', options);
+	return withTimeout(promise, options.timeout);
 }
 
 export function publicIpv6(options) {
@@ -252,15 +305,11 @@ export function publicIpv6(options) {
 		...options,
 	};
 
-	if (!options.onlyHttps) {
-		return queryAll('v6', options);
-	}
+	const promise = options.onlyHttps
+		? queryHttps('v6', options)
+		: queryAll('v6', options);
 
-	if (options.onlyHttps) {
-		return queryHttps('v6', options);
-	}
-
-	return queryDns('v6', options);
+	return withTimeout(promise, options.timeout);
 }
 
 export {CancelError} from 'got';

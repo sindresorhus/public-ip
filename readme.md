@@ -78,7 +78,7 @@ await publicIpv6({
 Type: `number`\
 Default: `5000`
 
-The time in milliseconds until a request is considered timed out.
+The time in milliseconds until the operation is considered timed out. This applies to the entire operation, not individual requests.
 
 ### IpNotFoundError
 

@@ -53,14 +53,6 @@ test('IPv4 HTTPS uses custom URLs', async t => {
 	t.is(dnsStub.called(), 0);
 });
 
-test('IPv4 DNS timeout', async t => {
-	t.true(isIPv4(await publicIpv4({timeout: 2000})));
-});
-
-test('IPv4 HTTPS timeout', async t => {
-	t.true(isIPv4(await publicIpv4({onlyHttps: true, timeout: 4000})));
-});
-
 test('IPv4 DNS cancellation', async t => {
 	const timeout = 5000;
 	const end = timeSpan();
@@ -123,4 +115,21 @@ test.serial('IPv4 or IPv6 cancellation', async t => {
 	promise.cancel();
 	await promise;
 	t.true(end() < timeout);
+});
+
+test('timeout applies to overall operation, not individual requests', async t => {
+	// Use very small timeout to ensure timeout behavior is tested
+	const timeout = 10; // 10ms should definitely timeout
+	const end = timeSpan();
+
+	await t.throwsAsync(publicIpv4({timeout, onlyHttps: true}), {
+		message: /Could not get the public IP address/,
+	});
+
+	const elapsed = end();
+
+	// Should timeout quickly (within reasonable bounds), not take cumulative time
+	// This verifies our fix works - before the fix, this would take much longer
+	t.true(elapsed < 150, `Expected quick timeout, but took ${elapsed}ms`);
+	t.true(elapsed >= timeout * 0.5, `Timeout too fast: ${elapsed}ms (expected ~${timeout}ms)`);
 });
