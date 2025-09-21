@@ -91,7 +91,7 @@ try {
 } catch (error) {
 	if (error instanceof IpNotFoundError) {
 		console.log('Could not determine public IP address');
-	} else if (error.message.includes('aborted')) {
+	} else if (error.name === 'AbortError') {
 		console.log('Request was cancelled');
 	} else {
 		console.log('An error occurred:', error.message);
